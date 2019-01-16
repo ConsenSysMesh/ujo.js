@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 
-function ujoInit(web3Provider) {
+export default function ujoInit(web3Provider) {
   // TODO: add network validations (rinkeby or mainnet)
   const web3 = new Web3(web3Provider);
   return {
@@ -8,7 +8,7 @@ function ujoInit(web3Provider) {
     getWeb3: () => web3,
     // return the accounts given by the provider
     getAccounts: () =>
-      new Promise((resolve, rejct) => {
+      new Promise((resolve, reject) => {
         web3.eth.getAccounts((err, accounts) => {
           if (err) reject(err);
           else resolve(accounts);
@@ -26,10 +26,12 @@ function ujoInit(web3Provider) {
 }
 
 async function execute() {
-  const ujoConfig = ujoInit('https://rinkeby.infura.io/v3/d00a0a90e5ec4086987529d063643d9c');
-  const accounts = await ujoConfig.getAccounts();
-  const network = await ujoConfig.getNetwork();
-  console.log(accounts, network);
+  const ujoConfig = ujoInit(
+    'http://localhost:8545',
+  )
+  const accounts = await ujoConfig.getAccounts()
+  const network = await ujoConfig.getNetwork()
+  console.log(accounts, network)
 }
 
-execute();
+execute()
