@@ -1,4 +1,12 @@
 {
-  "extends": ["plugin:prettier/recommended"],
-  "plugins": ["react", "jsx-a11y", "import"]
+  "extends": ["airbnb", "plugin:prettier/recommended"],
+  "plugins": ["react", "jsx-a11y", "import"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  }
 }
