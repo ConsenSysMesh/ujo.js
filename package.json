@@ -7,6 +7,15 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "lint": "lerna run lint",
+    "test": "lerna run test",
+    "install": "npm run bootstrap",
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "build:watch": "lerna run --parallel build -- -- --watch",
+    "build:docs": "lerna run build:docs"
+  },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "eslint": "^5.12.0",
