@@ -26,12 +26,10 @@ export default function ujoInit(web3Provider) {
 }
 
 async function execute() {
-  const ujoConfig = ujoInit(
-    'http://localhost:8545',
-  )
-  const accounts = await ujoConfig.getAccounts()
-  const network = await ujoConfig.getNetwork()
-  console.log(accounts, network)
+  const ujoConfig = ujoInit('http://localhost:8545');
+  const accounts = await ujoConfig.getAccounts();
+  const network = await ujoConfig.getNetwork();
+  console.log(accounts, network);
 }
 
-execute()
+execute();

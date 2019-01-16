@@ -1,7 +1,9 @@
 {
-  "name": "@ujomusic/config",
+  "name": "badges",
   "version": "0.0.0",
   "main": "dist/index.js",
+  "license": "MIT",
+  "private": true,
   "scripts": {
     "build": "babel src -d dist -s"
   },
