@@ -193,12 +193,12 @@ async function initializeBadges(ujoConfig) {
         } catch (error) {
           fetchedBadgesSuccess = false;
           fetchedBadges = true;
-          throw new Error({ error: 'Error fetching badges' });
+          return new Error({ error: 'Error fetching badges' });
         }
       } else if (fetchedBadges && fetchedBadgesSuccess) {
         return badgeData;
       } else {
-        throw new Error({ error: 'Error fetching badges' });
+        return new Error({ error: 'Error fetching badges' });
       }
     },
   };
