@@ -115,7 +115,7 @@ async function initializeBadges(ujoConfig) {
     ^              c h e c k   o n e   b l o c k   a t   a   t i m e                                                                              ^
     start                                                                             end
 
-    We do many at the same time:
+    We do many chunks at the same time, where blocks are checked linearly in each chunk:
 
     [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
     |-------------||-------------||-------------||-------------||-------------||-------|
@@ -176,6 +176,7 @@ async function initializeBadges(ujoConfig) {
     getBadgeContract: () => patronageBadgeContract,
     getBadgesByAddress: async ethereumAddress => {
       if (!fetchedBadges) {
+        // mark state variables
         fetchedBadges = true;
         try {
           // get the networkID and latest block number
@@ -190,16 +191,27 @@ async function initializeBadges(ujoConfig) {
           // scrape ethereum event logs for badge data associated iwth the given token IDs
           badgeData = getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);
           fetchedBadgesSuccess = true;
+          return badgeData;
         } catch (error) {
           fetchedBadgesSuccess = false;
           fetchedBadges = true;
           return new Error({ error: 'Error fetching badges' });
         }
-      } else if (fetchedBadges && fetchedBadgesSuccess) {
+      }
+      // if we fetched badges already successfully, return the cache
+      else if (fetchedBadges && fetchedBadgesSuccess) {
         return badgeData;
-      } else {
+      }
+      // if we fetchedBadges but not successfully, an error occured
+      else {
         return new Error({ error: 'Error fetching badges' });
       }
+    },
+    clearBadgeCache: () => {
+      fetchedBadges = false;
+      fetchedBadgesSuccess = false;
+      badgeData = [];
+      return true;
     },
   };
 }
