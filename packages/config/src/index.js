@@ -83,6 +83,10 @@ async function initializeBadges(ujoConfig) {
 
   /* --- caching layer for badges --- */
 
+  let fetchedBadges = false;
+  let fetchedBadgesSuccess = false;
+  let badgeData = [];
+
   /* --- connect to the badges contracts on the network passed to ujoConfig ---  */
 
   try {
@@ -171,17 +175,31 @@ async function initializeBadges(ujoConfig) {
   return {
     getBadgeContract: () => patronageBadgeContract,
     getBadgesByAddress: async ethereumAddress => {
-      // get the networkID and latest block number
-      const [networkId, mostRecentBlockNumber] = await Promise.all([
-        ujoConfig.getNetwork(),
-        ujoConfig.getBlockNumber(),
-      ]);
-      // fetch the token IDs owned by ethereum address
-      const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
-      // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
-      const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
-      // scrape ethereum event logs for badge data associated iwth the given token IDs
-      return getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);
+      if (!fetchedBadges) {
+        fetchedBadges = true;
+        try {
+          // get the networkID and latest block number
+          const [networkId, mostRecentBlockNumber] = await Promise.all([
+            ujoConfig.getNetwork(),
+            ujoConfig.getBlockNumber(),
+          ]);
+          // fetch the token IDs owned by ethereum address
+          const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
+          // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
+          const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
+          // scrape ethereum event logs for badge data associated iwth the given token IDs
+          badgeData = getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);
+          fetchedBadgesSuccess = true;
+        } catch (error) {
+          fetchedBadgesSuccess = false;
+          fetchedBadges = true;
+          throw new Error({ error: 'Error fetching badges' });
+        }
+      } else if (fetchedBadges && fetchedBadgesSuccess) {
+        return badgeData;
+      } else {
+        throw new Error({ error: 'Error fetching badges' });
+      }
     },
   };
 }
