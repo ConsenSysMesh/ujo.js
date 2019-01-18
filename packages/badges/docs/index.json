@@ -1,0 +1,117 @@
+[
+  {
+    "__docId__": 0,
+    "kind": "file",
+    "name": "src/index.js",
+    "content": "import { utils } from 'web3';\nimport BadgeContracts from 'ujo-contracts-badges';\nimport Truffle from 'truffle-contract';\nimport ethUtil from 'ethereumjs-util';\nimport moment from 'moment';\nimport flat from 'array.prototype.flat';\n\nconst decodeTxData = eventData =>\n  // flattens the array and then decodes the values\n  flat(eventData).map(({ transactionHash, args: { nftcid, timeMinted } }) => [\n    nftcid,\n    moment\n      .unix(timeMinted.toString())\n      .utc()\n      .format('MMMM Do, YYYY'),\n    transactionHash,\n  ]);\n\n/**\n * Convert the badgeIds into hex strings, so we can use them in the event filters\n *\n * @param {Array<string>} param - array of badges.\n * @param {number} param - value to pad left by.\n */\nfunction convertBadgeIdsToHex(badgeArray, padLeft) {\n  return badgeArray.map(ethUtil.intToHex).map(hexString => padLeft(hexString, 64));\n}\n\nfunction determineStartBlock(networkId) {\n  switch (Number(networkId)) {\n    // if on mainnet, start event log search on block...\n    case 1:\n      return 6442621;\n    // if on rinkeby, start event log search on block...\n    case 4:\n      return 3068896;\n    // if not on mainnet or rinkeby just start on block 0\n    default:\n      return 0;\n  }\n}\n\n/**\n * Functions that need reference to closed over badge context\n * ETHEREUM EVENT LOG PARALLELIZER\n * instead of linearly going through ethereum and looking at the event logs of each block\n * we go through many chunks of ethereum at the same time, and then join the results together\n *\n * This is for performance optimization:\n * Instead of one call to `getPastEvents`, which looks like:\n * [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n * ^              c h e c k   o n e   b l o c k   a t   a   t i m e\n * start                                                                             end\n * We do many chunks at the same time, where blocks are checked linearly in each chunk:\n *\n * [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n * |-------------||-------------||-------------||-------------||-------------||-------|\n * ^             ^^             ^^             ^^             ^^             ^^       ^\n * blockIncrement blockIncrement blockIncrement blockIncrement blockIncrement finalIncrement\n * Now, 6 simulataneous calls were made to `getPastEvents`, which is still O(n) time complexity\n * but could make a significant difference in the future when ethereum gets extremely long\n *\n *\n */\nexport default async function initializeBadges(ujoConfig) {\n  /* --- Initial configuration of the badges --- */\n  const web3 = ujoConfig.getWeb3();\n  const web3Provider = web3.currentProvider;\n\n  const patronageBadgesProxy = Truffle(BadgeContracts.UjoPatronageBadges);\n  const patronageBadgesFunctions = Truffle(BadgeContracts.UjoPatronageBadgesFunctions);\n\n  let patronageBadgeContract = null;\n  let deployedProxy = null;\n\n  /* --- connect to the badges contracts on the network passed to ujoConfig ---  */\n\n  try {\n    patronageBadgesProxy.setProvider(web3Provider);\n    patronageBadgesFunctions.setProvider(web3Provider);\n\n    deployedProxy = await patronageBadgesProxy.deployed();\n    patronageBadgeContract = await patronageBadgesFunctions.at(deployedProxy.address);\n  } catch (error) {\n    console.error('unable to connect to patronage badge contract');\n  }\n\n  async function findEventData(hexBadgesByAddress, blockIncrement, startBlock, endBlock) {\n    if (patronageBadgeContract) {\n      // create an array to store parallelized calls to ethereum block chunks\n      const blockIncrements = new Array(Math.ceil((endBlock - startBlock) / blockIncrement)).fill();\n      // optimization for querying event logs by passing event signature\n      const eventHash = utils.soliditySha3('LogBadgeMinted(uint256,string,uint256,address,address)');\n      // all of these calls get invoked at one after the other, but the entire promise\n      // will not resolve until all have completed\n      return Promise.all(\n        blockIncrements.map((ele, idx) => {\n          // craft variables necessary to retrieve specific event logs from ethereum.\n          let options;\n          // if were at the first chunk of blocks...\n          if (idx === 0)\n            options = {\n              fromBlock: startBlock.toString(),\n              toBlock: (startBlock + blockIncrement).toString(),\n              // topics are the indexed/searchable paramaters in Ethereum event logs.\n              topics: [eventHash, hexBadgesByAddress],\n            };\n          // if were at the non-first chunk of blocks...\n          else {\n            const fromBlock = (startBlock + blockIncrement * idx + 1).toString();\n            const toBlock = (startBlock + blockIncrement * (idx + 1)).toString();\n            options = { fromBlock, toBlock, topics: [eventHash, hexBadgesByAddress] };\n          }\n          // issue the event logs request to ethereum\n          return patronageBadgeContract.getPastEvents('LogBadgeMinted', options);\n        }),\n      );\n    }\n    return new Error({ error: 'Attempted to get badge data with no smart contract' });\n  }\n\n  async function getBadgeData(badgeHexes, networkId, endBlock) {\n    const startBlock = determineStartBlock(networkId);\n    const blockIncrement = 5000;\n    // parse event logs to look for badgeHexes, from the patronage badge contract from start block to end block\n    // parallelizes requests by parsing event logs in chunks of \"blockIncrement\"\n    const encodedTxData = await findEventData(badgeHexes, blockIncrement, startBlock, endBlock);\n    // reformats tx data to be useful for clients and/or storage layer\n    const eventData = decodeTxData(encodedTxData);\n    return eventData;\n  }\n\n  return {\n    getBadgeContract: () => patronageBadgeContract,\n    getBadgesByAddress: async ethereumAddress => {\n      try {\n        // get the networkID and latest block number\n        const [networkId, mostRecentBlockNumber] = await Promise.all([\n          ujoConfig.getNetwork(),\n          ujoConfig.getBlockNumber(),\n        ]);\n        // fetch the token IDs owned by ethereum address\n        const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);\n        // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs\n        const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);\n        // scrape ethereum event logs for badge data associated iwth the given token IDs\n        return getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);\n      } catch (error) {\n        return new Error({ error: 'Error fetching badges' });\n      }\n    },\n  };\n}\n",
+    "static": true,
+    "longname": "/Users/alexander/Development/ujo.js/packages/badges/src/index.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 1,
+    "kind": "function",
+    "name": "decodeTxData",
+    "memberof": "src/index.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/index.js~decodeTxData",
+    "access": null,
+    "export": false,
+    "importPath": "@ujomusic/badges/src/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true
+  },
+  {
+    "__docId__": 2,
+    "kind": "function",
+    "name": "convertBadgeIdsToHex",
+    "memberof": "src/index.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/index.js~convertBadgeIdsToHex",
+    "access": null,
+    "export": false,
+    "importPath": "@ujomusic/badges/src/index.js",
+    "importStyle": null,
+    "description": "Convert the badgeIds into hex strings, so we can use them in the event filters",
+    "lineNumber": 25,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Array<string>"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "param",
+        "description": "array of badges."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "param",
+        "description": "value to pad left by."
+      }
+    ]
+  },
+  {
+    "__docId__": 3,
+    "kind": "function",
+    "name": "determineStartBlock",
+    "memberof": "src/index.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/index.js~determineStartBlock",
+    "access": null,
+    "export": false,
+    "importPath": "@ujomusic/badges/src/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true
+  },
+  {
+    "__docId__": 4,
+    "kind": "function",
+    "name": "initializeBadges",
+    "memberof": "src/index.js",
+    "generator": false,
+    "async": true,
+    "static": true,
+    "longname": "src/index.js~initializeBadges",
+    "access": null,
+    "export": true,
+    "importPath": "@ujomusic/badges/src/index.js",
+    "importStyle": "initializeBadges",
+    "description": "Functions that need reference to closed over badge context\nETHEREUM EVENT LOG PARALLELIZER\ninstead of linearly going through ethereum and looking at the event logs of each block\nwe go through many chunks of ethereum at the same time, and then join the results together\n\nThis is for performance optimization:\nInstead of one call to `getPastEvents`, which looks like:\n[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n^              c h e c k   o n e   b l o c k   a t   a   t i m e\nstart                                                                             end\nWe do many chunks at the same time, where blocks are checked linearly in each chunk:\n\n[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n|-------------||-------------||-------------||-------------||-------------||-------|\n^             ^^             ^^             ^^             ^^             ^^       ^\nblockIncrement blockIncrement blockIncrement blockIncrement blockIncrement finalIncrement\nNow, 6 simulataneous calls were made to `getPastEvents`, which is still O(n) time complexity\nbut could make a significant difference in the future when ethereum gets extremely long",
+    "lineNumber": 65
+  },
+  {
+    "kind": "index",
+    "content": "",
+    "longname": "/Users/alexander/Development/ujo.js/packages/badges/README.md",
+    "name": "./README.md",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "packageJSON",
+    "content": "{\n  \"name\": \"@ujomusic/badges\",\n  \"version\": \"0.0.0\",\n  \"main\": \"dist/index.js\",\n  \"scripts\": {\n    \"build\": \"babel src -d dist -s\",\n    \"build:docs\": \"esdoc -c .esdoc.json\"\n  },\n  \"dependencies\": {\n    \"array.prototype.flat\": \"^1.2.1\",\n    \"ethereumjs-util\": \"^6.0.0\",\n    \"moment\": \"^2.23.0\",\n    \"truffle-contract\": \"^4.0.0-beta.0\",\n    \"ujo-contracts-badges\": \"git+ssh://git@github.com:UjoTeam/contracts-badges.git#master\",\n    \"web3\": \"^1.0.0-beta.37\"\n  }\n}\n",
+    "longname": "/Users/alexander/Development/ujo.js/packages/badges/package.json",
+    "name": "package.json",
+    "static": true,
+    "access": "public"
+  }
+]
