@@ -81,12 +81,6 @@ async function initializeBadges(ujoConfig) {
   let patronageBadgeContract = null;
   let deployedProxy = null;
 
-  /* --- caching layer for badges --- */
-
-  let fetchedBadges = false;
-  let fetchedBadgesSuccess = false;
-  let badgeData = [];
-
   /* --- connect to the badges contracts on the network passed to ujoConfig ---  */
 
   try {
@@ -175,43 +169,21 @@ async function initializeBadges(ujoConfig) {
   return {
     getBadgeContract: () => patronageBadgeContract,
     getBadgesByAddress: async ethereumAddress => {
-      if (!fetchedBadges) {
-        // mark state variables
-        fetchedBadges = true;
-        try {
-          // get the networkID and latest block number
-          const [networkId, mostRecentBlockNumber] = await Promise.all([
-            ujoConfig.getNetwork(),
-            ujoConfig.getBlockNumber(),
-          ]);
-          // fetch the token IDs owned by ethereum address
-          const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
-          // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
-          const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
-          // scrape ethereum event logs for badge data associated iwth the given token IDs
-          badgeData = getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);
-          fetchedBadgesSuccess = true;
-          return badgeData;
-        } catch (error) {
-          fetchedBadgesSuccess = false;
-          fetchedBadges = true;
-          return new Error({ error: 'Error fetching badges' });
-        }
-      }
-      // if we fetched badges already successfully, return the cache
-      else if (fetchedBadges && fetchedBadgesSuccess) {
-        return badgeData;
-      }
-      // if we fetchedBadges but not successfully, an error occured
-      else {
+      try {
+        // get the networkID and latest block number
+        const [networkId, mostRecentBlockNumber] = await Promise.all([
+          ujoConfig.getNetwork(),
+          ujoConfig.getBlockNumber(),
+        ]);
+        // fetch the token IDs owned by ethereum address
+        const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
+        // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
+        const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
+        // scrape ethereum event logs for badge data associated iwth the given token IDs
+        return getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);
+      } catch (error) {
         return new Error({ error: 'Error fetching badges' });
       }
-    },
-    clearBadgeCache: () => {
-      fetchedBadges = false;
-      fetchedBadgesSuccess = false;
-      badgeData = [];
-      return true;
     },
   };
 }
