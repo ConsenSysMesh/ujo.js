@@ -8,7 +8,7 @@ import LicensingContracts from 'ujo-contracts-handlers';
  *
  * @param {Object} ujoConfig contains network configuration and optional propertiess
  */
-export default async function initializeLicensing(ujoConfig) {
+export default async function initializeLicensing(ujoConfig, testAccount) {
   const web3 = ujoConfig.getWeb3();
   const web3Provider = web3.currentProvider;
 
@@ -20,19 +20,18 @@ export default async function initializeLicensing(ujoConfig) {
   const Oracle = Truffle(LicensingContracts.TestOracle);
 
   try {
-    LicensingHandler.setProvider(web3Provider);
-    LicensingContract = await LicensingHandler.new();
+    await LicensingHandler.setProvider(web3Provider);
+    LicensingContract = await LicensingHandler.new({ from: testAccount });
   } catch (error) {
-    console.error('Error connecting to licensing contract');
+    console.log('Error connecting to licensing contract', error);
   }
 
   // TODO: Move to seperate oracle module
   try {
-    Oracle.setProvider(web3Provider);
-    OracleContract = await Oracle.new();
-    console.log(OracleContract);
+    await Oracle.setProvider(web3Provider);
+    OracleContract = await Oracle.new({ from: testAccount });
   } catch (error) {
-    console.error('Error connecting to oracle contract');
+    console.log('Error connecting to oracle contract', error);
   }
 
   /**
@@ -43,7 +42,7 @@ export default async function initializeLicensing(ujoConfig) {
   const boostGas = gasRequired => {
     const { BN } = Web3.utils;
     const gasBoost = new BN(gasRequired, 10).divRound(new BN('20'));
-    return new Web3(gasRequired, 10).add(gasBoost);
+    return new BN(gasRequired, 10).add(gasBoost);
   };
 
   return {
@@ -54,57 +53,31 @@ export default async function initializeLicensing(ujoConfig) {
       return exchangeRate.toString(10);
     },
     License: async (sender, cid, beneficiaries, amounts, eth) => {
+      console.log('License');
       let wei;
       if (eth) {
         wei = web3.utils.toWei(eth, 'ether');
       }
 
-      // TODO: fix this logic
-      // amount isn't getting set to wei correctly
-      for (let amount of amounts) {
-        amount = web3.utils.toWei(eth, 'ether');
-      }
+      // Convert ether amounts to wei
+      let amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
 
       const gasRequired = await LicensingContract.pay.estimateGas(
         cid,
         OracleContract.address, // which oracle to use for reference
         sender, // address
         beneficiaries, // addresses
-        amounts,
+        amountsInWei, // in wei
         [], // contract notifiers [none in this case]
         { from: sender, value: wei },
       );
 
-      console.log('++++++++++++++');
-      console.log(gasRequired);
-      console.log('++++++++++++++');
       const gas = boostGas(gasRequired);
-
-      let output;
-      try {
-        LicensingContract.pay(cid, OracleContract.address, sender, beneficiaries, amounts, [], {
-          from: sender,
-          value: wei,
-          gas,
-        })
-          .on('transactionHash', txHash => {
-            console.log(txHash);
-            output = txHash;
-          })
-          .on('receipt', txReceipt => {
-            console.log(txReceipt);
-            output = txReceipt;
-          })
-          .on('error', (error, receipt) => {
-            console.log(error, receipt);
-            output = error;
-          });
-      } catch (error) {
-        return new Error({ error: 'Error licensing' });
-      }
-
-      // TODO: Fix return
-      return output;
+      return LicensingContract.pay(cid, OracleContract.address, sender, beneficiaries, amountsInWei, [], {
+        from: sender,
+        value: wei,
+        gas,
+      });
     },
   };
 }

@@ -20,7 +20,7 @@ contract('Ujo Core', accounts => {
   });
 
   it('should create a license', async () => {
-    const ujoLicensing = await initializeLicensing(ujoConfig);
+    const ujoLicensing = await initializeLicensing(ujoConfig, accounts[0]);
     // const exchangeRate = await ujoLicensing.getExchangeRate();
     // console.log(exchangeRate);
     // sender, cid, beneficiaries, amounts, eth;
@@ -29,6 +29,7 @@ contract('Ujo Core', accounts => {
     const beneficiaries = [accounts[0]];
     const amounts = ['2'];
     const eth = '2';
-    await ujoLicensing.License(sender, cid, beneficiaries, amounts, eth);
+    let test = await ujoLicensing.License(sender, cid, beneficiaries, amounts, eth);
+    console.log(test);
   });
 });
