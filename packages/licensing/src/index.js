@@ -71,6 +71,9 @@ export default async function initializeLicensing(ujoConfig) {
         { from: sender, value: wei },
       );
 
+      console.log('+++++++++++++++');
+      console.log(gasRequired);
+      console.log('+++++++++++++++');
       const gas = boostGas(gasRequired);
 
       let output;

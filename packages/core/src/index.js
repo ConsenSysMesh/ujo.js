@@ -15,10 +15,15 @@ async function execute() {
 
   const ujoLicensing = await initializeLicensing(ujoConfig);
   const exchangeRate = await ujoLicensing.getExchangeRate();
-  console.log(exchangeRate);
+  console.log(`Exchange rate ${exchangeRate}`);
 
   // sender, cid, beneficiaries, amounts, eth;
-  await ujoLicensing.License('0x', 'Qm', ['0x'], [1], 1);
+  const sender = '0xE8F08D7dc98be694CDa49430CA01595776909Eac';
+  const cid = 'Qm';
+  const beneficiaries = [sender];
+  const amounts = ['1'];
+  const eth = '1';
+  await ujoLicensing.License(sender, cid, beneficiaries, amounts, eth);
 }
 
 execute();

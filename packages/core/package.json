@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "test": "truffle test",
     "build": "babel src -d dist -s"
   }
 }
