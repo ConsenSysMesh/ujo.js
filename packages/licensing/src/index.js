@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import Truffle from 'truffle-contract';
 import LicensingContracts from 'ujo-contracts-handlers';
-import OracleContracts from 'ujo-contracts-oracle';
+// import OracleContracts from 'ujo-contracts-oracle';
 
 /**
  * Initialize Licensing
@@ -16,11 +16,12 @@ export default async function initializeLicensing(ujoConfig) {
   const LicensingHandler = Truffle(LicensingContracts.ETHUSDHandler);
 
   let OracleContract = null;
-  const Oracle = Truffle(OracleContracts.USDETHOracle);
+  // const Oracle = Truffle(OracleContracts.USDETHOracle);
+  const Oracle = Truffle(LicensingContracts.TestOracle);
 
   try {
     LicensingHandler.setProvider(web3Provider);
-    LicensingContract = await LicensingHandler.deployed();
+    LicensingContract = await LicensingHandler.new();
   } catch (error) {
     console.error('Error connecting to licensing contract');
   }
@@ -28,7 +29,8 @@ export default async function initializeLicensing(ujoConfig) {
   // TODO: Move to seperate oracle module
   try {
     Oracle.setProvider(web3Provider);
-    OracleContract = await Oracle.deployed();
+    OracleContract = await Oracle.new();
+    console.log(OracleContract);
   } catch (error) {
     console.error('Error connecting to oracle contract');
   }
@@ -57,8 +59,10 @@ export default async function initializeLicensing(ujoConfig) {
         wei = web3.utils.toWei(eth, 'ether');
       }
 
+      // TODO: fix this logic
+      // amount isn't getting set to wei correctly
       for (let amount of amounts) {
-        amount = web3.utils.toWei(amount, 'ether');
+        amount = web3.utils.toWei(eth, 'ether');
       }
 
       const gasRequired = await LicensingContract.pay.estimateGas(
@@ -71,9 +75,9 @@ export default async function initializeLicensing(ujoConfig) {
         { from: sender, value: wei },
       );
 
-      console.log('+++++++++++++++');
+      console.log('++++++++++++++');
       console.log(gasRequired);
-      console.log('+++++++++++++++');
+      console.log('++++++++++++++');
       const gas = boostGas(gasRequired);
 
       let output;
