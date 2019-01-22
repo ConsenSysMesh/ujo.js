@@ -1,0 +1,15 @@
+{
+  "name": "@ujomusic/licensing",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "babel src -d dist -s",
+    "build:docs": "esdoc -c .esdoc.json"
+  },
+  "dependencies": {
+    "truffle-contract": "^4.0.0-beta.0",
+    "ujo-contracts-handlers": "git+ssh://git@github.com:UjoTeam/contracts-handlers.git#3441d55",
+    "ujo-contracts-oracle": "git+ssh://git@github.com:UjoTeam/contracts-oracle.git#71e41be",
+    "web3": "^1.0.0-beta.37"
+  }
+}

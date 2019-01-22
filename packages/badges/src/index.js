@@ -60,7 +60,7 @@ export default async function initializeBadges(ujoConfig) {
     deployedProxy = await patronageBadgesProxy.deployed();
     patronageBadgeContract = await patronageBadgesFunctions.at(deployedProxy.address);
   } catch (error) {
-    console.error('unable to connect to patronage badge contract');
+    console.error('Error connecting to patronage badge contract');
   }
 
   /**
