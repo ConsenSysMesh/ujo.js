@@ -1,6 +1,8 @@
 import Web3 from 'web3';
 import Truffle from 'truffle-contract';
-import LicensingContracts from 'ujo-contracts-handlers';
+// import LicensingContracts from 'ujo-contracts-handlers';
+import TestLicensingContracts from '../build/contracts/ETHUSDHandler.json';
+import TestOracleContracts from '../build/contracts/TestOracle.json';
 // import OracleContracts from 'ujo-contracts-oracle';
 
 /**
@@ -13,11 +15,11 @@ export default async function initializeLicensing(ujoConfig) {
   const web3Provider = web3.currentProvider;
 
   let LicensingContract = null;
-  const LicensingHandler = Truffle(LicensingContracts.ETHUSDHandler);
+  const LicensingHandler = Truffle(TestLicensingContracts);
 
   let OracleContract = null;
   // const Oracle = Truffle(OracleContracts.USDETHOracle);
-  const Oracle = Truffle(LicensingContracts.TestOracle);
+  const Oracle = Truffle(TestOracleContracts);
 
   try {
     await LicensingHandler.setProvider(web3Provider);
