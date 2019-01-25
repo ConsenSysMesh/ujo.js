@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import Truffle from 'truffle-contract';
-import LicensingContracts from 'ujo-contracts-handlers';
+// import LicensingContracts from 'ujo-contracts-handlers';
+import LicensingContracts from '../../../build/contracts/ETHUSDHandler.json';
 // import OracleContracts from 'ujo-contracts-oracle';
 
 /**
@@ -13,11 +14,11 @@ export default async function initializeLicensing(ujoConfig) {
   const web3Provider = web3.currentProvider;
 
   let LicensingContract = null;
-  const LicensingHandler = Truffle(LicensingContracts.ETHUSDHandler);
+  const LicensingHandler = Truffle(LicensingContracts);
 
-  let OracleContract = null;
-  // const Oracle = Truffle(OracleContracts.USDETHOracle);
-  const Oracle = Truffle(LicensingContracts.TestOracle);
+  // let OracleContract = null;
+  // // const Oracle = Truffle(OracleContracts.USDETHOracle);
+  // const Oracle = Truffle(LicensingContracts.TestOracle);
 
   try {
     await LicensingHandler.setProvider(web3Provider);
@@ -26,13 +27,13 @@ export default async function initializeLicensing(ujoConfig) {
     console.log('Error connecting to licensing contract', error);
   }
 
-  // TODO: Move to seperate oracle module
-  try {
-    await Oracle.setProvider(web3Provider);
-    OracleContract = await Oracle.deployed();
-  } catch (error) {
-    console.log('Error connecting to oracle contract', error);
-  }
+  // // TODO: Move to seperate oracle module
+  // try {
+  //   await Oracle.setProvider(web3Provider);
+  //   OracleContract = await Oracle.deployed();
+  // } catch (error) {
+  //   console.log('Error connecting to oracle contract', error);
+  // }
 
   /**
    * Adds a 5% boost to the gas for web3 calls as to ensure tx's go through
