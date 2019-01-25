@@ -1,53 +1,9 @@
 import { utils } from 'web3';
 import BadgeContracts from 'ujo-contracts-badges';
 import Truffle from 'truffle-contract';
-import ethUtil from 'ethereumjs-util';
 import moment from 'moment';
-import flat from 'array.prototype.flat';
 
-const decodeTxData = eventData =>
-  // flattens the array and then decodes the values
-  flat(eventData).map(({ transactionHash, args: { nftcid, timeMinted } }) => [
-    nftcid,
-    moment
-      .unix(timeMinted.toString())
-      .utc()
-      .format('MMMM Do, YYYY'),
-    transactionHash,
-  ]);
-
-/**
- * Convert the badgeIds into hex strings, so we can use them in the event filters
- *
- * @param {Array<string>} param - array of badges.
- * @param {number} param - value to pad left by.
- */
-function convertBadgeIdsToHex(badgeArray, padLeft) {
-  return badgeArray.map(ethUtil.intToHex).map(hexString => padLeft(hexString, 64));
-}
-
-/**
- * Determines the ethereum block to begin event log search from
- *
- * @param {number} param - networkId.
- */
-function determineStartBlock(networkId) {
-  switch (Number(networkId)) {
-    // if on mainnet, start event log search on block...
-    case 1:
-      return 6442621;
-    // if on rinkeby, start event log search on block...
-    case 4:
-      return 3068896;
-    // if not on mainnet or rinkeby just start on block 0
-    default:
-      return 0;
-  }
-}
-
-function formatBadgeData(badgeData) {
-  return badgeData;
-}
+import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
 
 export default async function initializeBadges(ujoConfig) {
   /* --- Initial configuration of the badges --- */
@@ -59,6 +15,9 @@ export default async function initializeBadges(ujoConfig) {
 
   let patronageBadgeContract = null;
   let deployedProxy = null;
+
+  /* --- Sample storage provider setup --- */
+  const storageProvider = ujoConfig.getStorageProvider();
 
   /* --- connect to the badges contracts on the network passed to ujoConfig ---  */
 
@@ -126,7 +85,7 @@ export default async function initializeBadges(ujoConfig) {
     return new Error({ error: 'Attempted to get badge data with no smart contract' });
   }
 
-  async function getBadgeData(badgeHexes, networkId, endBlock) {
+  async function getBadges(badgeHexes, networkId, endBlock) {
     const startBlock = determineStartBlock(networkId);
     const blockIncrement = 5000;
     // parse event logs to look for badgeHexes, from the patronage badge contract from start block to end block
@@ -135,6 +94,23 @@ export default async function initializeBadges(ujoConfig) {
     // reformats tx data to be useful for clients and/or storage layer
     const eventData = decodeTxData(encodedTxData);
     return eventData;
+  }
+
+  /* this function takes a badge in the format given back by getBadges
+    [
+      <String> unique identifier (in our case cid)
+      <String> time minted
+      <String> txHash
+    ]
+
+    takes the unique identifier, and gets the badgemetadata from the storage provider
+
+    reformats the badgemetadata for the api spec
+  */
+  async function getBadgeMetadata(badge) {
+    const { data } = await storageProvider.fetchMetadataByQueryParameter(badge[0]);
+    // reformat data here
+    return data;
   }
 
   return {
@@ -148,7 +124,14 @@ export default async function initializeBadges(ujoConfig) {
         ]);
         // get all the badge data
         // the empty array means all badges (not any specific tokenIds)
-        return getBadgeData([], networkId, mostRecentBlockNumber);
+        const badges = await getBadges([], networkId, mostRecentBlockNumber);
+        // add this snippet to unfurl music group data in badges and reformat badge data
+        // try {
+        //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
+        // } catch (error) {
+        //   return new Error({ error: 'most likely hit an endpoint rate limit' });
+        // }
+        return badges;
       } catch (error) {
         return new Error({ error: 'Error fetching badges' });
       }
@@ -164,8 +147,17 @@ export default async function initializeBadges(ujoConfig) {
         const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
         // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
         const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
+        if (!hexBadgesByAddress.length) return [];
         // scrape ethereum event logs for badge data associated iwth the given token IDs
-        return getBadgeData(hexBadgesByAddress, networkId, mostRecentBlockNumber);
+        const badges = await getBadges(hexBadgesByAddress, networkId, mostRecentBlockNumber);
+        /* --- add this snippet to unfurl music group metadata within the badges and reformat the badges --- */
+        // try {
+        //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
+        // } catch (error) {
+        //   return new Error({ error: 'most likely hit an endpoint rate limit' });
+        // }
+
+        return badges;
       } catch (error) {
         return new Error({ error: 'Error fetching badges' });
       }
@@ -200,7 +192,10 @@ export default async function initializeBadges(ujoConfig) {
             .unix(timeMinted)
             .utc()
             .format('MMMM Do, YYYY');
-          const data = formatBadgeData([nftcid, formattedTimeMinted, txHash]);
+
+          const data = [nftcid, formattedTimeMinted, txHash];
+          // add this snippet to unfurl music group information in badge and reformat badge data
+          // const badgeWithMetadata = getBadgeMetadata(data)
           return { ...txReceipt, data };
         } catch (error) {
           return new Error({ error: 'Error decoding txReceipt logs' });
