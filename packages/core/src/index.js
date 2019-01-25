@@ -6,9 +6,16 @@ async function execute() {
   // do not delete, will translate this into documentation
   const accounts = await ujoConfig.getAccounts();
   const network = await ujoConfig.getNetwork();
+  const txReceipt = await ujoConfig.getTransactionReceipt(
+    '0xc3ccf36047e8645210f7851d5f01766ba3e2fe5d63d1c034870ad35d589ad620',
+  );
+  // console.log('txReceipt', txReceipt);
   const ujoBadges = await initializeBadges(ujoConfig);
-  const badges = await ujoBadges.getBadgesByAddress('0xE8F08D7dc98be694CDa49430CA01595776909Eac');
-  console.log(badges);
+  const badges = await ujoBadges.getAllBadges();
+  const badgesByAddress = await ujoBadges.getBadgesByAddress('0xE8F08D7dc98be694CDa49430CA01595776909Eac');
+  const badgeCheck = await ujoBadges.getBadge('0xa34c11851e952fa637df1985912e66df26eefc2df5d0b548306ae7bfae898b07');
+  console.log(badgeCheck);
+  // console.log(badges.length, badgesByAddress.length);
 }
 
 execute();

@@ -26,6 +26,11 @@ function convertBadgeIdsToHex(badgeArray, padLeft) {
   return badgeArray.map(ethUtil.intToHex).map(hexString => padLeft(hexString, 64));
 }
 
+/**
+ * Determines the ethereum block to begin event log search from
+ *
+ * @param {number} param - networkId.
+ */
 function determineStartBlock(networkId) {
   switch (Number(networkId)) {
     // if on mainnet, start event log search on block...
@@ -38,6 +43,10 @@ function determineStartBlock(networkId) {
     default:
       return 0;
   }
+}
+
+function formatBadgeData(badgeData) {
+  return badgeData;
 }
 
 export default async function initializeBadges(ujoConfig) {
@@ -72,7 +81,7 @@ export default async function initializeBadges(ujoConfig) {
    * This is for performance optimization:
    * Instead of one call to `getPastEvents`, which looks like:
    * [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
-   * ^              c h e c k   o n e   b l o c k   a t   a   t i m e
+   * ^              c h e c k   o n e   b l o c k   a t   a   t i m e                  ^
    * start                                                                             end
    * We do many chunks at the same time, where blocks are checked linearly in each chunk:
    *
@@ -130,6 +139,20 @@ export default async function initializeBadges(ujoConfig) {
 
   return {
     getBadgeContract: () => patronageBadgeContract,
+    getAllBadges: async () => {
+      try {
+        // get the networkID and latest block number
+        const [networkId, mostRecentBlockNumber] = await Promise.all([
+          ujoConfig.getNetwork(),
+          ujoConfig.getBlockNumber(),
+        ]);
+        // get all the badge data
+        // the empty array means all badges (not any specific tokenIds)
+        return getBadgeData([], networkId, mostRecentBlockNumber);
+      } catch (error) {
+        return new Error({ error: 'Error fetching badges' });
+      }
+    },
     getBadgesByAddress: async ethereumAddress => {
       try {
         // get the networkID and latest block number
@@ -146,6 +169,44 @@ export default async function initializeBadges(ujoConfig) {
       } catch (error) {
         return new Error({ error: 'Error fetching badges' });
       }
+    },
+    // meant to get more information about the badges
+    // returns transaction receipt along with formatted badge data @ prop 'badge'
+    // const badge = await ujoBadges.getBadge()
+    // badge.data
+    // returns null if transaction has not been mined to chain yet
+    getBadge: async txHash => {
+      let txReceipt;
+      try {
+        txReceipt = await ujoConfig.getTransactionReceipt(txHash);
+      } catch (error) {
+        return new Error({ error: 'Error getting transaction receipt' });
+      }
+      if (txReceipt) {
+        try {
+          // decode the logs from the transaction receipt based on event log signature
+          const { nftcid, timeMinted } = web3.eth.abi.decodeLog(
+            [
+              { indexed: true, name: 'tokenId', type: 'uint256' },
+              { indexed: false, name: 'nftcid', type: 'string' },
+              { indexed: false, name: 'timeMinted', type: 'uint256' },
+              { indexed: false, name: 'buyer', type: 'address' },
+              { indexed: false, name: 'issuer', type: 'address' },
+            ],
+            txReceipt.logs[0].data,
+            txReceipt.logs[0].topics,
+          );
+          const formattedTimeMinted = moment
+            .unix(timeMinted)
+            .utc()
+            .format('MMMM Do, YYYY');
+          const data = formatBadgeData([nftcid, formattedTimeMinted, txHash]);
+          return { ...txReceipt, data };
+        } catch (error) {
+          return new Error({ error: 'Error decoding txReceipt logs' });
+        }
+      }
+      return null;
     },
   };
 }

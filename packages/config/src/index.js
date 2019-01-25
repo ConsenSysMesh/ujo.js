@@ -31,5 +31,18 @@ export default function ujoInit(web3Provider, dataStorageProvider) {
           resolve(result);
         });
       }),
+    /**
+     * Determines the ethereum block to begin event log search from
+     *
+     * @param {string} param - txHash of the transaction to check.
+     * returns modified version of https://web3js.readthedocs.io/en/1.0/web3-eth.html#eth-gettransactionreceipt-return
+     */
+    getTransactionReceipt: async txHash =>
+      new Promise((resolve, reject) => {
+        web3.eth.getTransactionReceipt(txHash, (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      }),
   };
 }
