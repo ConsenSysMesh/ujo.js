@@ -172,7 +172,10 @@ export default async function initializeBadges(ujoConfig) {
       // the empty array means all badges (not any specific tokenIds)
       const badges = await getBadges([], networkId, mostRecentBlockNumber);
 
+      // do we want to return any other data with these badges?
       return badges.filter(badge => badge[0] === uniqueIdentifier);
+      // add this snippet to unfurl music group information in badge and reformat badge data
+      // .map(getBadgeMetadata)
     },
     // meant to get more information about the badges
     // returns transaction receipt along with formatted badge data @ prop 'badge'
@@ -205,14 +208,19 @@ export default async function initializeBadges(ujoConfig) {
             .utc()
             .format('MMMM Do, YYYY');
 
+          // this is the format of how badge data gets returned in the event log
           const data = [nftcid, formattedTimeMinted, txHash];
           // add this snippet to unfurl music group information in badge and reformat badge data
           // const badgeWithMetadata = getBadgeMetadata(data)
+
+          // append the formatted badge data along with the rest of the tx receipt
+          // see https://web3js.readthedocs.io/en/1.0/web3-eth.html#gettransactionreceipt
           return { ...txReceipt, data };
         } catch (error) {
           return new Error({ error: 'Error decoding txReceipt logs' });
         }
       }
+      // is this right?
       return null;
     },
   };
