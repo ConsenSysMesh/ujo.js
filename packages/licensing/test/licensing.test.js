@@ -21,12 +21,12 @@ contract('Ujo Licensing', accounts => {
   });
 
   it('gets the exchange rate', async () => {
-    const ujoLicensing = await initializeLicensing(ujoConfig);
+    const ujoLicensing = await initializeLicensing(ujoConfig, { test: true });
     await ujoLicensing.getExchangeRate();
   });
 
   it('should create a license', async () => {
-    const ujoLicensing = await initializeLicensing(ujoConfig);
+    const ujoLicensing = await initializeLicensing(ujoConfig, { test: true });
     const sender = accounts[3];
     const cid = 'Qm';
     const beneficiaries = [accounts[0]];
