@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import Truffle from 'truffle-contract';
 // import LicensingContracts from 'ujo-contracts-handlers';
-import LicensingContracts from '../../../build/contracts/ETHUSDHandler.json';
+import TestLicensingContracts from '../../../build/contracts/ETHUSDHandler.json';
 // import OracleContracts from 'ujo-contracts-oracle';
 
 /**
@@ -14,7 +14,7 @@ export default async function initializeLicensing(ujoConfig) {
   const web3Provider = web3.currentProvider;
 
   let LicensingContract = null;
-  const LicensingHandler = Truffle(LicensingContracts);
+  const LicensingHandler = Truffle(TestLicensingContracts);
 
   // let OracleContract = null;
   // // const Oracle = Truffle(OracleContracts.USDETHOracle);
@@ -48,38 +48,38 @@ export default async function initializeLicensing(ujoConfig) {
 
   return {
     getLicensingContract: () => LicensingContract,
-    getExchangeRate: async () => {
-      const oracleDeployed = await Oracle.deployed();
-      const exchangeRate = await oracleDeployed.getUintPrice.call();
-      return exchangeRate.toString(10);
-    },
-    License: async (sender, cid, beneficiaries, amounts, eth) => {
-      console.log('License');
-      let wei;
-      if (eth) {
-        wei = web3.utils.toWei(eth, 'ether');
-      }
+    // getExchangeRate: async () => {
+    //   const oracleDeployed = await Oracle.deployed();
+    //   const exchangeRate = await oracleDeployed.getUintPrice.call();
+    //   return exchangeRate.toString(10);
+    // },
+    // License: async (sender, cid, beneficiaries, amounts, eth) => {
+    //   console.log('License');
+    //   let wei;
+    //   if (eth) {
+    //     wei = web3.utils.toWei(eth, 'ether');
+    //   }
 
-      // Convert ether amounts to wei
-      const amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
+    //   // Convert ether amounts to wei
+    //   const amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
 
-      const gasRequired = await LicensingContract.pay.estimateGas(
-        cid,
-        OracleContract.address, // which oracle to use for reference
-        sender, // address
-        beneficiaries, // addresses
-        amountsInWei, // in wei
-        [], // contract notifiers [none in this case]
-        { from: sender, value: wei },
-      );
+    //   const gasRequired = await LicensingContract.pay.estimateGas(
+    //     cid,
+    //     OracleContract.address, // which oracle to use for reference
+    //     sender, // address
+    //     beneficiaries, // addresses
+    //     amountsInWei, // in wei
+    //     [], // contract notifiers [none in this case]
+    //     { from: sender, value: wei },
+    //   );
 
-      const gas = boostGas(gasRequired);
+    //   const gas = boostGas(gasRequired);
 
-      return LicensingContract.pay(cid, OracleContract.address, sender, beneficiaries, amountsInWei, [], {
-        from: sender,
-        value: wei,
-        gas,
-      });
-    },
+    //   return LicensingContract.pay(cid, OracleContract.address, sender, beneficiaries, amountsInWei, [], {
+    //     from: sender,
+    //     value: wei,
+    //     gas,
+    //   });
+    // },
   };
 }
