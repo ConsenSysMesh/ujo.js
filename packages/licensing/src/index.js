@@ -8,7 +8,7 @@ import LicensingContracts from 'ujo-contracts-handlers';
  *
  * @param {Object} ujoConfig contains network configuration and optional propertiess
  */
-export default async function initializeLicensing(ujoConfig, testAccount) {
+export default async function initializeLicensing(ujoConfig) {
   const web3 = ujoConfig.getWeb3();
   const web3Provider = web3.currentProvider;
 
@@ -21,7 +21,7 @@ export default async function initializeLicensing(ujoConfig, testAccount) {
 
   try {
     await LicensingHandler.setProvider(web3Provider);
-    LicensingContract = await LicensingHandler.new({ from: testAccount });
+    LicensingContract = await LicensingHandler.deployed();
   } catch (error) {
     console.log('Error connecting to licensing contract', error);
   }
@@ -29,7 +29,7 @@ export default async function initializeLicensing(ujoConfig, testAccount) {
   // TODO: Move to seperate oracle module
   try {
     await Oracle.setProvider(web3Provider);
-    OracleContract = await Oracle.new({ from: testAccount });
+    OracleContract = await Oracle.deployed();
   } catch (error) {
     console.log('Error connecting to oracle contract', error);
   }
@@ -60,7 +60,7 @@ export default async function initializeLicensing(ujoConfig, testAccount) {
       }
 
       // Convert ether amounts to wei
-      let amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
+      const amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
 
       const gasRequired = await LicensingContract.pay.estimateGas(
         cid,
@@ -73,6 +73,7 @@ export default async function initializeLicensing(ujoConfig, testAccount) {
       );
 
       const gas = boostGas(gasRequired);
+
       return LicensingContract.pay(cid, OracleContract.address, sender, beneficiaries, amountsInWei, [], {
         from: sender,
         value: wei,
