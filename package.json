@@ -15,7 +15,8 @@
     "build": "lerna run build",
     "build:watch": "lerna run --parallel build -- -- --watch",
     "build:docs": "lerna run build:docs",
-    "compile": "lerna run compile"
+    "compile": "lerna run compile",
+    "execute": "npm run build && node packages/core/dist"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

@@ -136,7 +136,7 @@ export default async function initializeBadges(ujoConfig) {
         return new Error({ error: 'Error fetching badges' });
       }
     },
-    getBadgesByAddress: async ethereumAddress => {
+    getBadgesOwnedByAddress: async ethereumAddress => {
       try {
         // get the networkID and latest block number
         const [networkId, mostRecentBlockNumber] = await Promise.all([
@@ -161,6 +161,18 @@ export default async function initializeBadges(ujoConfig) {
       } catch (error) {
         return new Error({ error: 'Error fetching badges' });
       }
+    },
+    // meant to fetch all the badges minted for some unique string (in our case music group cid)
+    getBadgesMintedFor: async uniqueIdentifier => {
+      const [networkId, mostRecentBlockNumber] = await Promise.all([
+        ujoConfig.getNetwork(),
+        ujoConfig.getBlockNumber(),
+      ]);
+      // get all the badge data
+      // the empty array means all badges (not any specific tokenIds)
+      const badges = await getBadges([], networkId, mostRecentBlockNumber);
+
+      return badges.filter(badge => badge[0] === uniqueIdentifier);
     },
     // meant to get more information about the badges
     // returns transaction receipt along with formatted badge data @ prop 'badge'

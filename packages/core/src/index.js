@@ -12,8 +12,10 @@ async function execute() {
   // console.log('txReceipt', txReceipt);
   const ujoBadges = await initializeBadges(ujoConfig);
   const badges = await ujoBadges.getAllBadges();
-  const badgesByAddress = await ujoBadges.getBadgesByAddress('0xE8F08D7dc98be694CDa49430CA01595776909Eac');
+  const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress('0xE8F08D7dc98be694CDa49430CA01595776909Eac');
   const badgeCheck = await ujoBadges.getBadge('0xc3ccf36047e8645210f7851d5f01766ba3e2fe5d63d1c034870ad35d589ad620');
+  const badgesByCid = await ujoBadges.getBadgesMintedFor('zdpuAsmQBSBLMUejTcys5hJWAW5M2YE6utnVAwgBPrCbBxAGx');
+  console.log(badgesByCid);
 }
 
 execute();
