@@ -13,21 +13,10 @@ export const decodeTxData = eventData =>
     transactionHash,
   ]);
 
-/**
- * Convert the badgeIds into hex strings, so we can use them in the event filters
- *
- * @param {Array<string>} param - array of badges.
- * @param {number} param - value to pad left by.
- */
 export function convertBadgeIdsToHex(badgeArray, padLeft) {
   return badgeArray.map(ethUtil.intToHex).map(hexString => padLeft(hexString, 64));
 }
 
-/**
- * Determines the ethereum block to begin event log search from
- *
- * @param {number} param - networkId.
- */
 export function determineStartBlock(networkId) {
   switch (Number(networkId)) {
     // if on mainnet, start event log search on block...

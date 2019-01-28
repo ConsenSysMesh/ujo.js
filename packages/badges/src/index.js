@@ -276,7 +276,7 @@ export default async function initializeBadges(ujoConfig) {
           // add this snippet to unfurl music group information in badge and reformat badge data
           // const badgeWithMetadata = getBadgeMetadata(data)
 
-          // append the formatted badge data along with the rest of the tx receipt
+          // add the formatted badge data along with the rest of the tx receipt
           // see https://web3js.readthedocs.io/en/1.0/web3-eth.html#gettransactionreceipt
           return { ...txReceipt, data };
         } catch (error) {

@@ -2,28 +2,50 @@
 
 # Function
 
-## `decodeTxData()`
+## `initializeBadges(ujoConfig: Object): Object`
+
+the initializeBadges method provides an API for interacting with ujo patronage badges
+
+| Name      | Type   | Attribute | Description                                       |
+| --------- | ------ | --------- | ------------------------------------------------- |
+| ujoConfig | Object |           | the config object returned by ujoInit @see [link] |
+
+## `getBadgeContract(): Object`
+
+getBadgeContract is a getter method for the ujo badges contract
 
 | Name | Type | Attribute | Description |
-| --- | --- | --- | --- |
+| ---- | ---- | --------- | ----------- |
 
-## `convertBadgeIdsToHex(param: Array<string>, param: number)`
 
-Convert the badgeIds into hex strings, so we can use them in the event filters
+## `getAllBadges(): Promise<Object[], Error>`
 
-| Name | Type | Attribute | Description |
-| --- | --- | --- | --- |
-| param | Array<string> |  | array of badges. |
-| param | number |  | value to pad left by. |
-
-## `determineStartBlock()`
+getAllBadges is a getter method for every single badge in the proxy contract
 
 | Name | Type | Attribute | Description |
-| --- | --- | --- | --- |
+| ---- | ---- | --------- | ----------- |
 
-## `initializeBadges()`
 
-Functions that need reference to closed over badge context ETHEREUM EVENT LOG PARALLELIZER instead of linearly going through ethereum and looking at the event logs of each block we go through many chunks of ethereum at the same time, and then join the results together This is for performance optimization: Instead of one call to `getPastEvents`, which looks like: [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] ^ c h e c k o n e b l o c k a t a t i m e start end We do many chunks at the same time, where blocks are checked linearly in each chunk: [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] |-------------||-------------||-------------||-------------||-------------||-------| ^ ^^ ^^ ^^ ^^ ^^ ^ blockIncrement blockIncrement blockIncrement blockIncrement blockIncrement finalIncrement Now, 6 simulataneous calls were made to `getPastEvents`, which is still O(n) time complexity but could make a significant difference in the future when ethereum gets extremely long
+## `getBadgesOwnedByAddress(ethereumAddress: string): Promise<Object[], Error>`
 
-| Name | Type | Attribute | Description |
-| --- | --- | --- | --- |
+getBadgesOwnedByAddress is a getter method for every single badge owned by ethereum address
+
+| Name            | Type   | Attribute | Description                                   |
+| --------------- | ------ | --------- | --------------------------------------------- |
+| ethereumAddress | string |           | the ethereum address owner of returned badges |
+
+## `getBadgesMintedFor(uniqueId: string): Promise<Object[], Error>`
+
+getBadgesMintedFor is a getter method for every single badge representing a unique id (in our case music group IPFS cid) by ethereum address
+
+| Name     | Type   | Attribute | Description                                                            |
+| -------- | ------ | --------- | ---------------------------------------------------------------------- |
+| uniqueId | string |           | the unique id that the badge represents (in our case it's an IPFS cid) |
+
+## `getBadge(txHash: string): Promise<Object, Error>`
+
+getBadge is a getter method for a single badge
+
+| Name   | Type   | Attribute | Description                               |
+| ------ | ------ | --------- | ----------------------------------------- |
+| txHash | string |           | the transaction hash of the badge minting |
