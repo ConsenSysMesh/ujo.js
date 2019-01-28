@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "lint": "lerna run lint",
-    "test": "lerna run test",
+    "test": "npm run build && lerna run test",
     "install": "npm run bootstrap",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
@@ -24,7 +24,9 @@
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
+    "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.2.0",
     "babel-eslint": "^10.0.1",
     "esdoc": "^1.1.0",
@@ -37,6 +39,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.3",
     "lerna": "^3.10.5",
-    "prettier": "1.15.3"
+    "prettier": "1.15.3",
+    "truffle": "5.0.2"
   }
 }
