@@ -11,7 +11,6 @@ import TestOracleContracts from '../../contracts/licensing/build/contracts/TestO
  */
 export default async function initializeLicensing(ujoConfig, opts = {}) {
   const web3 = ujoConfig.getWeb3();
-  const web3Provider = web3.currentProvider;
 
   const LicensingHandler = new web3.eth.Contract(LicensingContracts.abi, '0xFcb0e327292C9AEe9b29685AF8B2A06626C5c274');
 
@@ -20,18 +19,6 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
     Oracle = new web3.eth.Contract(TestOracleContracts.abi, '0x9f8e882071bc29313E4C403720EB0EF04aB85013');
   } else {
     Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle, '');
-  }
-
-  try {
-    await LicensingHandler.setProvider(web3Provider);
-  } catch (error) {
-    console.log('Error connecting to licensing contract', error);
-  }
-  // TODO: Move to seperate oracle module
-  try {
-    await Oracle.setProvider(web3Provider);
-  } catch (error) {
-    console.log('Error connecting to oracle contract', error);
   }
 
   /**
