@@ -1,8 +1,7 @@
 import { boostGas, getContractAddress } from 'utils';
 // import Truffle from 'truffle-contract';
 import OracleContracts from 'ujo-contracts-oracle';
-import LicensingContracts from '../../contracts/licensing/build/contracts/ETHUSDHandler.json';
-import TestOracleContracts from '../../contracts/licensing/build/contracts/TestOracle.json';
+import { ETHUSDHandler, TestOracle } from 'licensing-contracts';
 
 /**
  * Initialize Licensing
@@ -12,13 +11,13 @@ import TestOracleContracts from '../../contracts/licensing/build/contracts/TestO
 export default async function initializeLicensing(ujoConfig, opts = {}) {
   const web3 = ujoConfig.getWeb3();
   const networkId = await ujoConfig.getNetwork();
-  const licensingHandlerAddress = getContractAddress(LicensingContracts, networkId);
-  const LicensingHandler = new web3.eth.Contract(LicensingContracts.abi, licensingHandlerAddress);
+  const licensingHandlerAddress = getContractAddress(ETHUSDHandler, networkId);
+  const LicensingHandler = new web3.eth.Contract(ETHUSDHandler.abi, licensingHandlerAddress);
 
   let Oracle;
   if (opts.test) {
-    const testOracleAddress = getContractAddress(TestOracleContracts, networkId);
-    Oracle = new web3.eth.Contract(TestOracleContracts.abi, testOracleAddress);
+    const testOracleAddress = getContractAddress(TestOracle, networkId);
+    Oracle = new web3.eth.Contract(TestOracle.abi, testOracleAddress);
   } else {
     const oracleAddress = getContractAddress(OracleContracts.USDETHOracle, networkId);
     Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle.abi, oracleAddress);

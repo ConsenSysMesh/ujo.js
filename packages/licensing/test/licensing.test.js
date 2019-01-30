@@ -1,7 +1,7 @@
 import { getContractAddress } from 'utils';
+import { TestOracle } from 'licensing-contracts';
+
 import ujoInit from '../../config';
-import LicensingContracts from '../../contracts/licensing/build/contracts/ETHUSDHandler.json';
-import TestOracle from '../../contracts/licensing/build/contracts/TestOracle.json';
 import initializeLicensing from '..';
 
 const keystore = require('./accounts');

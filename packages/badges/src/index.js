@@ -1,8 +1,7 @@
 import { utils } from 'web3';
 import moment from 'moment';
 import { getContractAddress } from 'utils';
-
-import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts/badges';
+import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from 'badge-contracts';
 
 import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
 

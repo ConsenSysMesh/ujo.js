@@ -12,9 +12,9 @@
   "dependencies": {
     "array.prototype.flat": "^1.2.1",
     "axios": "^0.18.0",
+    "badge-contracts": "./packages/contracts/badges",
     "ethereumjs-util": "^6.0.0",
     "moment": "^2.23.0",
-    "ujo-contracts-badges": "git+ssh://git@github.com:UjoTeam/contracts-badges.git#master",
     "utils": "./packages/utils/dist",
     "web3": "^1.0.0-beta.37"
   },
