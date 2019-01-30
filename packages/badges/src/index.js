@@ -164,7 +164,7 @@ export default async function initializeBadges(ujoConfig) {
         // get the networkID and latest block number
         const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // fetch the token IDs owned by ethereum address
-        const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
+        const badgesByAddress = await patronageBadgeContract.methods.getAllTokens(ethereumAddress).call();
         // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
         const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
         if (!hexBadgesByAddress.length) return [];
