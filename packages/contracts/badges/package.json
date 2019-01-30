@@ -24,9 +24,11 @@
   "dependencies": {
     "bignumber.js": "^6.0.0",
     "dotenv": "^6.2.0",
+    "licensing-contracts": "./packages/contracts/licensing",
     "truffle": "4.1.7",
     "truffle-contract": "3.0.1",
     "truffle-hdwallet-provider": "^1.0.0-web3one.5",
+    "utils": "./packages/utils",
     "web3-utils": "1.0.0-beta.37"
   },
   "devDependencies": {
