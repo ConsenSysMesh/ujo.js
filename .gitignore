@@ -1,5 +1,4 @@
 # Build directories
-build/
 lib/
 dist/
 coverage/
