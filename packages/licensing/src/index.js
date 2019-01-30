@@ -11,14 +11,17 @@ import TestOracleContracts from '../../contracts/licensing/build/contracts/TestO
  */
 export default async function initializeLicensing(ujoConfig, opts = {}) {
   const web3 = ujoConfig.getWeb3();
-
-  const LicensingHandler = new web3.eth.Contract(LicensingContracts.abi, '0xFcb0e327292C9AEe9b29685AF8B2A06626C5c274');
+  const networkId = await ujoConfig.getNetwork();
+  const licensingHandlerAddress = getContractAddress(LicensingContracts, networkId);
+  const LicensingHandler = new web3.eth.Contract(LicensingContracts.abi, licensingHandlerAddress);
 
   let Oracle;
   if (opts.test) {
-    Oracle = new web3.eth.Contract(TestOracleContracts.abi, '0x9f8e882071bc29313E4C403720EB0EF04aB85013');
+    const testOracleAddress = getContractAddress(TestOracleContracts, networkId);
+    Oracle = new web3.eth.Contract(TestOracleContracts.abi, testOracleAddress);
   } else {
-    Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle, '');
+    const oracleAddress = getContractAddress(OracleContracts.USDETHOracle, networkId);
+    Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle.abi, oracleAddress);
   }
 
   return {
@@ -30,10 +33,6 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
       console.log('License');
 
       let wei;
-      if (eth) {
-        wei = web3.utils.toWei(eth, 'ether');
-      }
-
       if (eth) {
         wei = web3.utils.toWei(eth, 'ether');
       }

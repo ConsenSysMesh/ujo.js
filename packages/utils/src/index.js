@@ -1,8 +1,8 @@
 import Web3 from 'web3';
 
-export const getContractAddress = (contractAbi, networkId) => {
+export const getContractAddress = (contractInterface, networkId) => {
   const network = networkId.toString();
-  return contractAbi.networks[network].address;
+  return contractInterface.networks[network].address;
 };
 
 /**
