@@ -30,8 +30,3 @@ export function determineStartBlock(networkId) {
       return 0;
   }
 }
-
-export const getContractAddress = (contractAbi, networkId) => {
-  const network = networkId.toString();
-  return contractAbi.networks[network].address;
-};

@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+import { boostGas, getContractAddress } from 'utils';
 // import Truffle from 'truffle-contract';
 import OracleContracts from 'ujo-contracts-oracle';
 import LicensingContracts from '../../contracts/licensing/build/contracts/ETHUSDHandler.json';
@@ -20,17 +20,6 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
   } else {
     Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle, '');
   }
-
-  /**
-   * Adds a 5% boost to the gas for web3 calls as to ensure tx's go through
-   *
-   * @param {string} gasRequired amount of gas required from `estimateGas`
-   */
-  const boostGas = gasRequired => {
-    const { BN } = Web3.utils;
-    const gasBoost = new BN(gasRequired, 10).divRound(new BN('20'));
-    return new BN(gasRequired, 10).add(gasBoost);
-  };
 
   return {
     getExchangeRate: async () => {

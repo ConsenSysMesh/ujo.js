@@ -1,9 +1,10 @@
 import { utils } from 'web3';
 import moment from 'moment';
+import { getContractAddress } from 'utils';
 
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts/badges';
 
-import { decodeTxData, convertBadgeIdsToHex, determineStartBlock, getContractAddress } from './helpers';
+import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
 
 /**
  * the initializeBadges method provides an API for interacting with ujo patronage badges
