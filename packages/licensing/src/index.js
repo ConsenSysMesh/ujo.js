@@ -1,9 +1,8 @@
 import Web3 from 'web3';
-import Truffle from 'truffle-contract';
-// import LicensingContracts from 'ujo-contracts-handlers';
+// import Truffle from 'truffle-contract';
 import OracleContracts from 'ujo-contracts-oracle';
-import LicensingContracts from '../build/contracts/ETHUSDHandler.json';
-import TestOracleContracts from '../build/contracts/TestOracle.json';
+import LicensingContracts from '../../contracts/licensing/build/contracts/ETHUSDHandler.json';
+import TestOracleContracts from '../../contracts/licensing/build/contracts/TestOracle.json';
 
 /**
  * Initialize Licensing
@@ -12,33 +11,14 @@ import TestOracleContracts from '../build/contracts/TestOracle.json';
  */
 export default async function initializeLicensing(ujoConfig, opts = {}) {
   const web3 = ujoConfig.getWeb3();
-  const web3Provider = web3.currentProvider;
 
-  let LicensingContract = null;
-  const LicensingHandler = Truffle(LicensingContracts);
-
-  let OracleContract = null;
+  const LicensingHandler = new web3.eth.Contract(LicensingContracts.abi, '0xFcb0e327292C9AEe9b29685AF8B2A06626C5c274');
 
   let Oracle;
   if (opts.test) {
-    Oracle = Truffle(TestOracleContracts);
+    Oracle = new web3.eth.Contract(TestOracleContracts.abi, '0x9f8e882071bc29313E4C403720EB0EF04aB85013');
   } else {
-    Oracle = Truffle(OracleContracts.USDETHOracle);
-  }
-
-  try {
-    await LicensingHandler.setProvider(web3Provider);
-    LicensingContract = await LicensingHandler.deployed();
-  } catch (error) {
-    console.log('Error connecting to licensing contract', error);
-  }
-
-  // TODO: Move to seperate oracle module
-  try {
-    await Oracle.setProvider(web3Provider);
-    OracleContract = await Oracle.deployed();
-  } catch (error) {
-    console.log('Error connecting to oracle contract', error);
+    Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle, '');
   }
 
   /**
@@ -53,15 +33,18 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
   };
 
   return {
-    getLicensingContract: () => LicensingContract,
     getExchangeRate: async () => {
-      const oracleDeployed = await Oracle.deployed();
-      const exchangeRate = await oracleDeployed.getUintPrice.call();
+      const exchangeRate = await Oracle.methods.getUintPrice().call();
       return exchangeRate.toString(10);
     },
-    License: async (sender, cid, beneficiaries, amounts, eth) => {
+    License: async (cid, oracle, buyer, beneficiaries, amounts, notifiers, eth) => {
       console.log('License');
+
       let wei;
+      if (eth) {
+        wei = web3.utils.toWei(eth, 'ether');
+      }
+
       if (eth) {
         wei = web3.utils.toWei(eth, 'ether');
       }
@@ -69,20 +52,29 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
       // Convert ether amounts to wei
       const amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
 
-      const gasRequired = await LicensingContract.pay.estimateGas(
-        cid,
-        OracleContract.address, // which oracle to use for reference
-        sender, // address
-        beneficiaries, // addresses
-        amountsInWei, // in wei
-        [], // contract notifiers [none in this case]
-        { from: sender, value: wei },
-      );
+      console.log('++++++++++');
+      console.log(LicensingHandler.methods);
+      console.log(Oracle.address);
+      console.log('++++++++++');
+
+      const gasRequired = await LicensingHandler.methods
+        .pay(
+          cid,
+          oracle, // which oracle to use for reference
+          buyer, // address
+          beneficiaries, // addresses
+          amountsInWei, // in wei
+          notifiers, // contract notifiers [none in this case]
+        )
+        .estimateGas({
+          from: buyer,
+          value: wei,
+        });
 
       const gas = boostGas(gasRequired);
 
-      return LicensingContract.pay(cid, OracleContract.address, sender, beneficiaries, amountsInWei, [], {
-        from: sender,
+      return LicensingHandler.methods.pay(cid, oracle, buyer, beneficiaries, amountsInWei, []).send({
+        from: buyer,
         value: wei,
         gas,
       });
