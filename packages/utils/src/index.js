@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+import { utils } from 'web3';
 
 export const getContractAddress = (contractInterface, networkId) => {
   const network = networkId.toString();
@@ -11,7 +11,12 @@ export const getContractAddress = (contractInterface, networkId) => {
  * @param {string} gasRequired amount of gas required from `estimateGas`
  */
 export const boostGas = gasRequired => {
-  const { BN } = Web3.utils;
+  const { BN } = utils;
   const gasBoost = new BN(gasRequired, 10).divRound(new BN('20'));
   return new BN(gasRequired, 10).add(gasBoost);
+};
+
+export const dollarToWei = (dollarAmount, exchangeRate) => {
+  const { BN } = utils;
+  return new BN('1000000000000000000', 10).divRound(new BN(exchangeRate, 10)).mul(new BN(dollarAmount, 10));
 };

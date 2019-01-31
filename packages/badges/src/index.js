@@ -1,6 +1,6 @@
 import { utils } from 'web3';
 import moment from 'moment';
-import { getContractAddress } from 'utils';
+import { getContractAddress, boostGas, dollarToWei } from 'utils';
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from 'badge-contracts';
 
 import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
@@ -261,6 +261,30 @@ export default async function initializeBadges(ujoConfig) {
       }
       // is this right?
       return null;
+    },
+    /**
+     * mints a new badge
+     * @param {string} badgeBuyerAddress - the eth address of the owner of the new badge
+     * @param {string} uniqueIdentifier - the resource that the newly minted badge represents (cid in our case)
+     * @param {string[]} beneficiaries - an array of ethereum addresses who will receive the money paid for the badge
+     * @param {number[]} splits - an array of integers that represent the amount paid to each beneficiary (out of 100). Must be in the same order as the beneficiary
+     * @param {number} patronageBadgePrice - the amount the badge costs in USD
+     * @param {number} exchangeRate - Eth:USD exchange rate
+     */
+    buyBadge: async (badgeBuyerAddress, uniqueIdentifier, beneficiaries, splits, patronageBadgePrice, exchangeRate) => {
+      const amountInWei = dollarToWei(patronageBadgePrice);
+      const gasRequired = await patronageBadgeContract.mint.estimateGas(
+        badgeBuyerAddress,
+        uniqueIdentifier,
+        beneficiaries,
+        splits,
+        patronageBadgePrice,
+        { from: badgeBuyerAddress, value: amountInWei, to: patronageBadgeContract.address },
+      );
+
+      const gas = boostGas(gasRequired);
+
+      console.log(gas, gasRequired);
     },
   };
 }
