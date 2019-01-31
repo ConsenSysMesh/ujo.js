@@ -1,53 +1,30 @@
-import { boostGas, getContractAddress } from 'utils';
-// import Truffle from 'truffle-contract';
-import OracleContracts from 'ujo-contracts-oracle';
-import { ETHUSDHandler, TestOracle } from 'licensing-contracts';
+import { boostGas, getContractAddress } from '../../utils/dist';
+import { ETHUSDHandler } from '../../contracts/licensing';
 
 /**
  * Initialize Licensing
  *
  * @param {Object} ujoConfig contains network configuration and optional propertiess
  */
-export default async function initializeLicensing(ujoConfig, opts = {}) {
+export default async function initializeLicensing(ujoConfig) {
   const web3 = ujoConfig.getWeb3();
   const networkId = await ujoConfig.getNetwork();
   const licensingHandlerAddress = getContractAddress(ETHUSDHandler, networkId);
   const LicensingHandler = new web3.eth.Contract(ETHUSDHandler.abi, licensingHandlerAddress);
 
-  let Oracle;
-  if (opts.test) {
-    const testOracleAddress = getContractAddress(TestOracle, networkId);
-    Oracle = new web3.eth.Contract(TestOracle.abi, testOracleAddress);
-  } else {
-    const oracleAddress = getContractAddress(OracleContracts.USDETHOracle, networkId);
-    Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle.abi, oracleAddress);
-  }
-
   return {
-    getExchangeRate: async () => {
-      const exchangeRate = await Oracle.methods.getUintPrice().call();
-      return exchangeRate.toString(10);
-    },
-    License: async (cid, oracle, buyer, beneficiaries, amounts, notifiers, eth) => {
-      console.log('License');
-
+    License: async (cid, buyer, beneficiaries, amounts, notifiers, eth) => {
+      const oracleAddress = ujoConfig.getOracleAddress();
       let wei;
-      if (eth) {
-        wei = web3.utils.toWei(eth, 'ether');
-      }
+      if (eth) wei = web3.utils.toWei(eth, 'ether');
 
       // Convert ether amounts to wei
       const amountsInWei = amounts.map(amount => web3.utils.toWei(amount, 'ether'));
 
-      console.log('++++++++++');
-      console.log(LicensingHandler.methods);
-      console.log(Oracle.address);
-      console.log('++++++++++');
-
       const gasRequired = await LicensingHandler.methods
         .pay(
           cid,
-          oracle, // which oracle to use for reference
+          oracleAddress, // which oracle to use for reference
           buyer, // address
           beneficiaries, // addresses
           amountsInWei, // in wei
@@ -60,7 +37,7 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
 
       const gas = boostGas(gasRequired);
 
-      return LicensingHandler.methods.pay(cid, oracle, buyer, beneficiaries, amountsInWei, []).send({
+      return LicensingHandler.methods.pay(cid, oracleAddress, buyer, beneficiaries, amountsInWei, []).send({
         from: buyer,
         value: wei,
         gas,
