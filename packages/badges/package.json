@@ -15,7 +15,7 @@
     "badge-contracts": "./packages/contracts/badges",
     "ethereumjs-util": "^6.0.0",
     "moment": "^2.23.0",
-    "utils": "./packages/utils/dist",
+    "utils": "../../packages/utils",
     "web3": "^1.0.0-beta.37"
   },
   "devDependencies": {
