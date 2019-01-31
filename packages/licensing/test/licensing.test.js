@@ -1,4 +1,5 @@
 import ujoInit from '../../config';
+import { getContractAddress } from '../../utils/dist';
 import initializeLicensing from '..';
 
 const keystore = require('./accounts');
@@ -14,7 +15,7 @@ describe('Licensing tests', async () => {
     const beneficiaries = ['0x3249c9b7f3cc4d2d46bb6fd6d9e42a72b2001d03'];
     const amounts = ['2'];
     const eth = '2';
-    const test = ujoLicensing.License(cid, buyer, beneficiaries, amounts, [], eth);
+    const test = await ujoLicensing.License(cid, buyer, beneficiaries, amounts, [], eth);
     console.log(test);
   });
 });

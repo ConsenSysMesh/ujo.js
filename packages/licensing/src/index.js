@@ -14,7 +14,7 @@ export default async function initializeLicensing(ujoConfig) {
 
   return {
     License: async (cid, buyer, beneficiaries, amounts, notifiers, eth) => {
-      const oracleAddress = ujoConfig.getOracleAddress();
+      const oracleAddress = await ujoConfig.getOracleAddress();
       let wei;
       if (eth) wei = web3.utils.toWei(eth, 'ether');
 
