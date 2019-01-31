@@ -2,7 +2,7 @@ import Web3 from 'web3';
 
 import ujoStorage from './ujoStorage';
 
-export default function ujoInit(web3Provider, dataStorageProvider) {
+export default function ujoInit(web3Provider, dataStorageProvider, opts = {}) {
   // TODO: add network validations (rinkeby or mainnet)
   const web3 = new Web3(web3Provider);
   const storageProvider = ujoStorage(dataStorageProvider);

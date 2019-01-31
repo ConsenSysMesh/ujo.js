@@ -1,0 +1,896 @@
+{
+  "contractName": "USDETHOracle",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "rhombusLighthouse",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_rhombusLighthouse",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getUintPrice",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b5060405160208061020f8339810180604052602081101561003057600080fd5b505160008054600160a060020a03909216600160a060020a03199092169190911790556101ad806100626000396000f3fe60806040526004361061004b5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166358836e9f8114610050578063c8fd299014610077575b600080fd5b34801561005c57600080fd5b506100656100b5565b60408051918252519081900360200190f35b34801561008357600080fd5b5061008c610165565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60008054604080517f420b81f600000000000000000000000000000000000000000000000000000000815281518493849373ffffffffffffffffffffffffffffffffffffffff9091169263420b81f69260048083019392829003018186803b15801561012057600080fd5b505afa158015610134573d6000803e3d6000fd5b505050506040513d604081101561014a57600080fd5b50516fffffffffffffffffffffffffffffffff169250505090565b60005473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a7230582004aec0f7ea5afdb464c4735afde23c18da36b1f8f7dc51cd0b665636714777040029",
+  "deployedBytecode": "0x60806040526004361061004b5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166358836e9f8114610050578063c8fd299014610077575b600080fd5b34801561005c57600080fd5b506100656100b5565b60408051918252519081900360200190f35b34801561008357600080fd5b5061008c610165565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60008054604080517f420b81f600000000000000000000000000000000000000000000000000000000815281518493849373ffffffffffffffffffffffffffffffffffffffff9091169263420b81f69260048083019392829003018186803b15801561012057600080fd5b505afa158015610134573d6000803e3d6000fd5b505050506040513d604081101561014a57600080fd5b50516fffffffffffffffffffffffffffffffff169250505090565b60005473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a7230582004aec0f7ea5afdb464c4735afde23c18da36b1f8f7dc51cd0b665636714777040029",
+  "sourceMap": "360:356:4:-;;;428:102;8:9:-1;5:2;;;30:1;27;20:12;5:2;428:102:4;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;428:102:4;485:17;:38;;-1:-1:-1;;;;;485:38:4;;;-1:-1:-1;;;;;;485:38:4;;;;;;;;;360:356;;;;;;",
+  "deployedSourceMap": "360:356:4:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;536:178;;8:9:-1;5:2;;;30:1;27;20:12;5:2;536:178:4;;;;;;;;;;;;;;;;;;;;389:32;;8:9:-1;5:2;;;30:1;27;20:12;5:2;389:32:4;;;;;;;;;;;;;;;;;;;;;;;536:178;581:4;656:17;;644:41;;;;;;;;581:4;;;;656:17;;;;;644:39;;:41;;;;;;;;;;;656:17;644:41;;;5:2:-1;;;;30:1;27;20:12;5:2;644:41:4;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;644:41:4;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;644:41:4;695:12;;;-1:-1:-1;;;536:178:4;:::o;389:32::-;;;;;;:::o",
+  "source": "pragma solidity ^0.5.0;\nimport \"./ILighthouse.sol\";\n\n/*\nOraclize -> Rhombus:\nThis oracle was changed/morphed to using Rhombus over Oraclize.\nThe old API is getUintPrice(), thus this shim essentially just allows it keep the old API.\nIt adds some extra gas costs. If it gets too much, then the other contracts could be changed to use the Rhombus API instead.\n*/\ncontract USDETHOracle {\n\n    address public rhombusLighthouse;\n\n    constructor(address _rhombusLighthouse) public {\n        rhombusLighthouse = _rhombusLighthouse;\n    }\n\n    function getUintPrice() public view returns (uint) {\n        (uint128 price, bool notTooLongSinceUpdated) = ILighthouse(rhombusLighthouse).peekData();\n        return price;\n    }\n}\n",
+  "sourcePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/oracle/contracts/USDETHOracle.sol",
+  "ast": {
+    "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/oracle/contracts/USDETHOracle.sol",
+    "exportedSymbols": {
+      "USDETHOracle": [
+        180
+      ]
+    },
+    "id": 181,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 148,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/oracle/contracts/ILighthouse.sol",
+        "file": "./ILighthouse.sol",
+        "id": 149,
+        "nodeType": "ImportDirective",
+        "scope": 181,
+        "sourceUnit": 36,
+        "src": "24:27:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 180,
+        "linearizedBaseContracts": [
+          180
+        ],
+        "name": "USDETHOracle",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 151,
+            "name": "rhombusLighthouse",
+            "nodeType": "VariableDeclaration",
+            "scope": 180,
+            "src": "389:32:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 150,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "389:7:4",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 160,
+              "nodeType": "Block",
+              "src": "475:55:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 158,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 156,
+                      "name": "rhombusLighthouse",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 151,
+                      "src": "485:17:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 157,
+                      "name": "_rhombusLighthouse",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 153,
+                      "src": "505:18:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "485:38:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 159,
+                  "nodeType": "ExpressionStatement",
+                  "src": "485:38:4"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 161,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 154,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 153,
+                  "name": "_rhombusLighthouse",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 161,
+                  "src": "440:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 152,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "440:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "439:28:4"
+            },
+            "returnParameters": {
+              "id": 155,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "475:0:4"
+            },
+            "scope": 180,
+            "src": "428:102:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 178,
+              "nodeType": "Block",
+              "src": "587:127:4",
+              "statements": [
+                {
+                  "assignments": [
+                    167,
+                    169
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 167,
+                      "name": "price",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 178,
+                      "src": "598:13:4",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint128",
+                        "typeString": "uint128"
+                      },
+                      "typeName": {
+                        "id": 166,
+                        "name": "uint128",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "598:7:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    {
+                      "constant": false,
+                      "id": 169,
+                      "name": "notTooLongSinceUpdated",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 178,
+                      "src": "613:27:4",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "typeName": {
+                        "id": 168,
+                        "name": "bool",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "613:4:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 175,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "expression": {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 171,
+                            "name": "rhombusLighthouse",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 151,
+                            "src": "656:17:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "id": 170,
+                          "name": "ILighthouse",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 35,
+                          "src": "644:11:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_ILighthouse_$35_$",
+                            "typeString": "type(contract ILighthouse)"
+                          }
+                        },
+                        "id": 172,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "644:30:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_ILighthouse_$35",
+                          "typeString": "contract ILighthouse"
+                        }
+                      },
+                      "id": 173,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "peekData",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 8,
+                      "src": "644:39:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_view$__$returns$_t_uint128_$_t_bool_$",
+                        "typeString": "function () view external returns (uint128,bool)"
+                      }
+                    },
+                    "id": 174,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "644:41:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_uint128_$_t_bool_$",
+                      "typeString": "tuple(uint128,bool)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "597:88:4"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 176,
+                    "name": "price",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 167,
+                    "src": "702:5:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "functionReturnParameters": 165,
+                  "id": 177,
+                  "nodeType": "Return",
+                  "src": "695:12:4"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 179,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUintPrice",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 162,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "557:2:4"
+            },
+            "returnParameters": {
+              "id": 165,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 164,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 179,
+                  "src": "581:4:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 163,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "581:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "580:6:4"
+            },
+            "scope": 180,
+            "src": "536:178:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 181,
+        "src": "360:356:4"
+      }
+    ],
+    "src": "0:717:4"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/oracle/contracts/USDETHOracle.sol",
+    "exportedSymbols": {
+      "USDETHOracle": [
+        180
+      ]
+    },
+    "id": 181,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 148,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/oracle/contracts/ILighthouse.sol",
+        "file": "./ILighthouse.sol",
+        "id": 149,
+        "nodeType": "ImportDirective",
+        "scope": 181,
+        "sourceUnit": 36,
+        "src": "24:27:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 180,
+        "linearizedBaseContracts": [
+          180
+        ],
+        "name": "USDETHOracle",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 151,
+            "name": "rhombusLighthouse",
+            "nodeType": "VariableDeclaration",
+            "scope": 180,
+            "src": "389:32:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 150,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "389:7:4",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 160,
+              "nodeType": "Block",
+              "src": "475:55:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 158,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 156,
+                      "name": "rhombusLighthouse",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 151,
+                      "src": "485:17:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 157,
+                      "name": "_rhombusLighthouse",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 153,
+                      "src": "505:18:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "485:38:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 159,
+                  "nodeType": "ExpressionStatement",
+                  "src": "485:38:4"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 161,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 154,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 153,
+                  "name": "_rhombusLighthouse",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 161,
+                  "src": "440:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 152,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "440:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "439:28:4"
+            },
+            "returnParameters": {
+              "id": 155,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "475:0:4"
+            },
+            "scope": 180,
+            "src": "428:102:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 178,
+              "nodeType": "Block",
+              "src": "587:127:4",
+              "statements": [
+                {
+                  "assignments": [
+                    167,
+                    169
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 167,
+                      "name": "price",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 178,
+                      "src": "598:13:4",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint128",
+                        "typeString": "uint128"
+                      },
+                      "typeName": {
+                        "id": 166,
+                        "name": "uint128",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "598:7:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    {
+                      "constant": false,
+                      "id": 169,
+                      "name": "notTooLongSinceUpdated",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 178,
+                      "src": "613:27:4",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "typeName": {
+                        "id": 168,
+                        "name": "bool",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "613:4:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 175,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "expression": {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 171,
+                            "name": "rhombusLighthouse",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 151,
+                            "src": "656:17:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "id": 170,
+                          "name": "ILighthouse",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 35,
+                          "src": "644:11:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_ILighthouse_$35_$",
+                            "typeString": "type(contract ILighthouse)"
+                          }
+                        },
+                        "id": 172,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "644:30:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_ILighthouse_$35",
+                          "typeString": "contract ILighthouse"
+                        }
+                      },
+                      "id": 173,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "peekData",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 8,
+                      "src": "644:39:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_view$__$returns$_t_uint128_$_t_bool_$",
+                        "typeString": "function () view external returns (uint128,bool)"
+                      }
+                    },
+                    "id": 174,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "644:41:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_uint128_$_t_bool_$",
+                      "typeString": "tuple(uint128,bool)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "597:88:4"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 176,
+                    "name": "price",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 167,
+                    "src": "702:5:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "functionReturnParameters": 165,
+                  "id": 177,
+                  "nodeType": "Return",
+                  "src": "695:12:4"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 179,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUintPrice",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 162,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "557:2:4"
+            },
+            "returnParameters": {
+              "id": 165,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 164,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 179,
+                  "src": "581:4:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 163,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "581:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "580:6:4"
+            },
+            "scope": 180,
+            "src": "536:178:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 181,
+        "src": "360:356:4"
+      }
+    ],
+    "src": "0:717:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+  },
+  "networks": {
+    "1": {
+      "events": {},
+      "links": {},
+      "address": "0x27d1a0acaee8ccfe1082ca5e0f6148565764d9fa",
+      "transactionHash": "0x32e123d18b2de2a113c9fa9ac810e87901cd155c1af54ed197953849c907f82b"
+    },
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0x7fbd998cdca9504f9e75816d966d87a81547d894",
+      "transactionHash": "0x57cdf8724993936ab981afde20fc8d0fbfb3164762204030ca900de3625978b8"
+    }
+  },
+  "schemaVersion": "3.0.1",
+  "updatedAt": "2019-01-31T20:42:43.512Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
