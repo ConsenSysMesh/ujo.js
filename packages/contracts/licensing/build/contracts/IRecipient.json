@@ -37,9 +37,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.21; //solhint-disable-line\nimport \"./IUSDETHOracle.sol\";\n\n\n// Interface for Recipient.\n// NOTE: Does not currently support ERC165 [for interface signature checking].\n// Future Handler Deployments Will Incorporate This.\ncontract IRecipient {\n    function receiveNotification(string _cid,\n    address _oracle,\n    address _buyer,\n    address[] _beneficiaries,\n    uint256[] _amounts) public payable;\n}\n\n\ncontract ETHUSDHandler {\n\n    function pay(string _cid,\n    address _oracle,\n    address _buyer, // this is for the case that someone else pays on your behalf\n    address[] _beneficiaries,\n    uint256[] _amounts,\n    address[] _notifiers) public payable {\n\n        // checks if the payment isn't egregiously malformed.\n        require(_beneficiaries.length == _amounts.length);\n\n        if (msg.value == 0) {\n            require(_beneficiaries.length == 0);\n            require(_amounts.length == 0);\n        } else {\n            uint256 totaltoPay;\n            for (uint256 i = 0; i < _amounts.length; i += 1) {\n                totaltoPay += _amounts[i];\n            }\n            require(totaltoPay == msg.value);\n\n            for (i = 0; i < _beneficiaries.length; i += 1) {\n                _beneficiaries[i].transfer(_amounts[i]);\n            }\n        }\n\n        IUSDETHOracle oracle = IUSDETHOracle(_oracle);\n        uint256 ethUSD = oracle.getUintPrice();\n\n        // notify any contracts about this payment\n        for (i = 0; i < _notifiers.length; i += 1) {\n            IRecipient(_notifiers[i]).receiveNotification(_cid,\n                _oracle,\n                _buyer,\n                _beneficiaries,\n                _amounts);\n        }\n\n        LogPayment(\n            _cid,\n            _oracle,\n            ethUSD,\n            msg.value,\n            msg.sender,\n            _buyer,\n            _beneficiaries,\n            _amounts)\n        ;\n    }\n\n    event LogPayment(string cid,\n    address oracle,\n    uint256 indexed ethUSD,\n    uint256 indexed value,\n    address issuer,\n    address indexed buyer,\n    address[] beneficiaries,\n    uint256[] amounts);\n\n}",
-  "sourcePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/licensing/contracts/ETHUSDHandler.sol",
+  "sourcePath": "/Users/alexander/Development/ujo.js/packages/contracts/licensing/contracts/ETHUSDHandler.sol",
   "ast": {
-    "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/licensing/contracts/ETHUSDHandler.sol",
+    "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts/licensing/contracts/ETHUSDHandler.sol",
     "exportedSymbols": {
       "ETHUSDHandler": [
         192
@@ -63,7 +63,7 @@
         "src": "0:24:0"
       },
       {
-        "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/licensing/contracts/IUSDETHOracle.sol",
+        "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts/licensing/contracts/IUSDETHOracle.sol",
         "file": "./IUSDETHOracle.sol",
         "id": 2,
         "nodeType": "ImportDirective",
@@ -111,7 +111,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
+                    "typeString": "string memory"
                   },
                   "typeName": {
                     "id": 3,
@@ -120,7 +120,7 @@
                     "src": "295:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
+                      "typeString": "string storage pointer"
                     }
                   },
                   "value": null,
@@ -189,7 +189,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -208,7 +208,7 @@
                     "src": "353:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -225,7 +225,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
-                    "typeString": "uint256[]"
+                    "typeString": "uint256[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -244,7 +244,7 @@
                     "src": "383:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                      "typeString": "uint256[]"
+                      "typeString": "uint256[] storage pointer"
                     }
                   },
                   "value": null,
@@ -381,11 +381,8 @@
                       "id": 36,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        488,
-                        489
-                      ],
-                      "referencedDeclaration": 488,
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 448,
                       "src": "750:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -430,7 +427,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 485,
+                        "referencedDeclaration": 445,
                         "src": "814:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -806,7 +803,7 @@
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 485,
+                                  "referencedDeclaration": 445,
                                   "src": "1127:3:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
@@ -844,11 +841,8 @@
                             "id": 86,
                             "name": "require",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              488,
-                              489
-                            ],
-                            "referencedDeclaration": 488,
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 448,
                             "src": "1105:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -1263,11 +1257,8 @@
                             "id": 48,
                             "name": "require",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              488,
-                              489
-                            ],
-                            "referencedDeclaration": 488,
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 448,
                             "src": "844:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -1373,11 +1364,8 @@
                             "id": 55,
                             "name": "require",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              488,
-                              489
-                            ],
-                            "referencedDeclaration": 488,
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 448,
                             "src": "893:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2001,7 +1989,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 485,
+                          "referencedDeclaration": 445,
                           "src": "1765:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2030,7 +2018,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 485,
+                          "referencedDeclaration": 445,
                           "src": "1788:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2180,7 +2168,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
+                    "typeString": "string memory"
                   },
                   "typeName": {
                     "id": 19,
@@ -2189,7 +2177,7 @@
                     "src": "466:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
+                      "typeString": "string storage pointer"
                     }
                   },
                   "value": null,
@@ -2258,7 +2246,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2277,7 +2265,7 @@
                     "src": "586:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2294,7 +2282,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
-                    "typeString": "uint256[]"
+                    "typeString": "uint256[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2313,7 +2301,7 @@
                     "src": "616:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                      "typeString": "uint256[]"
+                      "typeString": "uint256[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2330,7 +2318,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2349,7 +2337,7 @@
                     "src": "640:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2393,7 +2381,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
+                    "typeString": "string memory"
                   },
                   "typeName": {
                     "id": 172,
@@ -2402,7 +2390,7 @@
                     "src": "1908:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
+                      "typeString": "string storage pointer"
                     }
                   },
                   "value": null,
@@ -2555,7 +2543,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2574,7 +2562,7 @@
                     "src": "2046:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2592,7 +2580,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
-                    "typeString": "uint256[]"
+                    "typeString": "uint256[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2611,7 +2599,7 @@
                     "src": "2075:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                      "typeString": "uint256[]"
+                      "typeString": "uint256[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2630,7 +2618,7 @@
     "src": "0:2097:0"
   },
   "legacyAST": {
-    "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/licensing/contracts/ETHUSDHandler.sol",
+    "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts/licensing/contracts/ETHUSDHandler.sol",
     "exportedSymbols": {
       "ETHUSDHandler": [
         192
@@ -2654,7 +2642,7 @@
         "src": "0:24:0"
       },
       {
-        "absolutePath": "/Users/jpschwartz/Documents/ConsenSys/Ujo/ujo-js/ujo.js/packages/contracts/licensing/contracts/IUSDETHOracle.sol",
+        "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts/licensing/contracts/IUSDETHOracle.sol",
         "file": "./IUSDETHOracle.sol",
         "id": 2,
         "nodeType": "ImportDirective",
@@ -2702,7 +2690,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
+                    "typeString": "string memory"
                   },
                   "typeName": {
                     "id": 3,
@@ -2711,7 +2699,7 @@
                     "src": "295:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
+                      "typeString": "string storage pointer"
                     }
                   },
                   "value": null,
@@ -2780,7 +2768,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2799,7 +2787,7 @@
                     "src": "353:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2816,7 +2804,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
-                    "typeString": "uint256[]"
+                    "typeString": "uint256[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -2835,7 +2823,7 @@
                     "src": "383:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                      "typeString": "uint256[]"
+                      "typeString": "uint256[] storage pointer"
                     }
                   },
                   "value": null,
@@ -2972,11 +2960,8 @@
                       "id": 36,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        488,
-                        489
-                      ],
-                      "referencedDeclaration": 488,
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 448,
                       "src": "750:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3021,7 +3006,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 485,
+                        "referencedDeclaration": 445,
                         "src": "814:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -3397,7 +3382,7 @@
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 485,
+                                  "referencedDeclaration": 445,
                                   "src": "1127:3:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
@@ -3435,11 +3420,8 @@
                             "id": 86,
                             "name": "require",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              488,
-                              489
-                            ],
-                            "referencedDeclaration": 488,
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 448,
                             "src": "1105:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3854,11 +3836,8 @@
                             "id": 48,
                             "name": "require",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              488,
-                              489
-                            ],
-                            "referencedDeclaration": 488,
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 448,
                             "src": "844:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3964,11 +3943,8 @@
                             "id": 55,
                             "name": "require",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              488,
-                              489
-                            ],
-                            "referencedDeclaration": 488,
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 448,
                             "src": "893:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -4592,7 +4568,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 485,
+                          "referencedDeclaration": 445,
                           "src": "1765:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -4621,7 +4597,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 485,
+                          "referencedDeclaration": 445,
                           "src": "1788:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -4771,7 +4747,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
+                    "typeString": "string memory"
                   },
                   "typeName": {
                     "id": 19,
@@ -4780,7 +4756,7 @@
                     "src": "466:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
+                      "typeString": "string storage pointer"
                     }
                   },
                   "value": null,
@@ -4849,7 +4825,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -4868,7 +4844,7 @@
                     "src": "586:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -4885,7 +4861,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
-                    "typeString": "uint256[]"
+                    "typeString": "uint256[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -4904,7 +4880,7 @@
                     "src": "616:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                      "typeString": "uint256[]"
+                      "typeString": "uint256[] storage pointer"
                     }
                   },
                   "value": null,
@@ -4921,7 +4897,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -4940,7 +4916,7 @@
                     "src": "640:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -4984,7 +4960,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
+                    "typeString": "string memory"
                   },
                   "typeName": {
                     "id": 172,
@@ -4993,7 +4969,7 @@
                     "src": "1908:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
+                      "typeString": "string storage pointer"
                     }
                   },
                   "value": null,
@@ -5146,7 +5122,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeString": "address[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -5165,7 +5141,7 @@
                     "src": "2046:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeString": "address[] storage pointer"
                     }
                   },
                   "value": null,
@@ -5183,7 +5159,7 @@
                   "storageLocation": "default",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
-                    "typeString": "uint256[]"
+                    "typeString": "uint256[] memory"
                   },
                   "typeName": {
                     "baseType": {
@@ -5202,7 +5178,7 @@
                     "src": "2075:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                      "typeString": "uint256[]"
+                      "typeString": "uint256[] storage pointer"
                     }
                   },
                   "value": null,
@@ -5222,9 +5198,15 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+    "version": "0.4.21+commit.dfe3193c.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "2.0.1",
-  "updatedAt": "2019-01-30T15:20:43.073Z"
+  "schemaVersion": "3.0.1",
+  "updatedAt": "2019-01-31T22:44:23.553Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
 }
