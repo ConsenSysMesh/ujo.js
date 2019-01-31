@@ -1,7 +1,7 @@
 import { utils } from 'web3';
 import moment from 'moment';
-import { getContractAddress, boostGas, dollarToWei } from 'utils';
-import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from 'badge-contracts';
+import { getContractAddress } from '../../utils/dist';
+import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts/badges';
 
 import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
 
