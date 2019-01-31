@@ -38,9 +38,9 @@
   },
   "dependencies": {
     "truffle-contract": "^4.0.0-beta.0",
-    "licensing-contracts": "./packages/contracts/licensing",
+    "licensing-contracts": "../../packages/contracts/licensing",
     "ujo-contracts-oracle": "git+ssh://git@github.com:UjoTeam/contracts-oracle.git#71e41be",
-    "utils": "./packages/utils/dist",
+    "utils": "../../packages/utils",
     "web3": "^1.0.0-beta.37"
   }
 }
