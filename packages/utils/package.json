@@ -1,0 +1,14 @@
+{
+  "name": "@ujomusic/utils",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "truffle test",
+    "build": "babel src -d dist -s"
+  },
+  "dependencies": {
+    "web3": "^1.0.0-beta.41"
+  }
+}

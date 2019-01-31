@@ -1,7 +1,7 @@
 import { utils } from 'web3';
-import BadgeContracts from 'ujo-contracts-badges';
-import Truffle from 'truffle-contract';
 import moment from 'moment';
+import { getContractAddress } from 'utils';
+import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from 'badge-contracts';
 
 import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
 
@@ -18,28 +18,13 @@ import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpe
 export default async function initializeBadges(ujoConfig) {
   /* --- Initial configuration of the badges --- */
   const web3 = ujoConfig.getWeb3();
-  const web3Provider = web3.currentProvider;
 
-  const patronageBadgesProxy = Truffle(BadgeContracts.UjoPatronageBadges);
-  const patronageBadgesFunctions = Truffle(BadgeContracts.UjoPatronageBadgesFunctions);
-
-  let patronageBadgeContract = null;
-  let deployedProxy = null;
+  const networkId = await ujoConfig.getNetwork();
+  const patronageBadgesProxyAddress = getContractAddress(UjoPatronageBadges, networkId);
+  const patronageBadgeContract = new web3.eth.Contract(UjoPatronageBadgesFunctions.abi, patronageBadgesProxyAddress);
 
   /* --- Sample storage provider setup --- */
   const storageProvider = ujoConfig.getStorageProvider();
-
-  /* --- connect to the badges contracts on the network passed to ujoConfig ---  */
-
-  try {
-    patronageBadgesProxy.setProvider(web3Provider);
-    patronageBadgesFunctions.setProvider(web3Provider);
-
-    deployedProxy = await patronageBadgesProxy.deployed();
-    patronageBadgeContract = await patronageBadgesFunctions.at(deployedProxy.address);
-  } catch (error) {
-    return new Error({ error: 'Error connecting to patronage badge contract' });
-  }
 
   /*
     Functions that need reference to closed over badge context
@@ -95,8 +80,8 @@ export default async function initializeBadges(ujoConfig) {
     return new Error({ error: 'Attempted to get badge data with no smart contract' });
   }
 
-  async function getBadges(badgeHexes, networkId, endBlock) {
-    const startBlock = determineStartBlock(networkId);
+  async function getBadges(badgeHexes, network, endBlock) {
+    const startBlock = determineStartBlock(network);
     const blockIncrement = 5000;
     // parse event logs to look for badgeHexes, from the patronage badge contract from start block to end block
     // parallelizes requests by parsing event logs in chunks of "blockIncrement"
@@ -147,11 +132,8 @@ export default async function initializeBadges(ujoConfig) {
      */
     getAllBadges: async () => {
       try {
-        // get the networkID and latest block number
-        const [networkId, mostRecentBlockNumber] = await Promise.all([
-          ujoConfig.getNetwork(),
-          ujoConfig.getBlockNumber(),
-        ]);
+        // get the latest block number
+        const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // get all the badge data
         // the empty array means all badges (not any specific tokenIds)
         const badges = await getBadges([], networkId, mostRecentBlockNumber);
@@ -180,12 +162,9 @@ export default async function initializeBadges(ujoConfig) {
     getBadgesOwnedByAddress: async ethereumAddress => {
       try {
         // get the networkID and latest block number
-        const [networkId, mostRecentBlockNumber] = await Promise.all([
-          ujoConfig.getNetwork(),
-          ujoConfig.getBlockNumber(),
-        ]);
+        const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // fetch the token IDs owned by ethereum address
-        const badgesByAddress = await patronageBadgeContract.getAllTokens.call(ethereumAddress);
+        const badgesByAddress = await patronageBadgeContract.methods.getAllTokens(ethereumAddress).call();
         // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
         const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
         if (!hexBadgesByAddress.length) return [];
@@ -215,10 +194,7 @@ export default async function initializeBadges(ujoConfig) {
      * const badges = await ujoBadges.getBadgesMintedFor('zdpuAviMaYYFTBiW54TLV11h93mB1txF6zccoF5fKpu9nsub8')
      */
     getBadgesMintedFor: async uniqueIdentifier => {
-      const [networkId, mostRecentBlockNumber] = await Promise.all([
-        ujoConfig.getNetwork(),
-        ujoConfig.getBlockNumber(),
-      ]);
+      const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
       // get all the badge data
       // the empty array means all badges (not any specific tokenIds)
       const badges = await getBadges([], networkId, mostRecentBlockNumber);

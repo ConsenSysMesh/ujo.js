@@ -1,8 +1,7 @@
-import Web3 from 'web3';
+import { boostGas, getContractAddress } from 'utils';
 // import Truffle from 'truffle-contract';
 import OracleContracts from 'ujo-contracts-oracle';
-import LicensingContracts from '../../contracts/licensing/build/contracts/ETHUSDHandler.json';
-import TestOracleContracts from '../../contracts/licensing/build/contracts/TestOracle.json';
+import { ETHUSDHandler, TestOracle } from 'licensing-contracts';
 
 /**
  * Initialize Licensing
@@ -11,26 +10,18 @@ import TestOracleContracts from '../../contracts/licensing/build/contracts/TestO
  */
 export default async function initializeLicensing(ujoConfig, opts = {}) {
   const web3 = ujoConfig.getWeb3();
-
-  const LicensingHandler = new web3.eth.Contract(LicensingContracts.abi, '0xFcb0e327292C9AEe9b29685AF8B2A06626C5c274');
+  const networkId = await ujoConfig.getNetwork();
+  const licensingHandlerAddress = getContractAddress(ETHUSDHandler, networkId);
+  const LicensingHandler = new web3.eth.Contract(ETHUSDHandler.abi, licensingHandlerAddress);
 
   let Oracle;
   if (opts.test) {
-    Oracle = new web3.eth.Contract(TestOracleContracts.abi, '0x9f8e882071bc29313E4C403720EB0EF04aB85013');
+    const testOracleAddress = getContractAddress(TestOracle, networkId);
+    Oracle = new web3.eth.Contract(TestOracle.abi, testOracleAddress);
   } else {
-    Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle, '');
+    const oracleAddress = getContractAddress(OracleContracts.USDETHOracle, networkId);
+    Oracle = new web3.eth.Contract(OracleContracts.USDETHOracle.abi, oracleAddress);
   }
-
-  /**
-   * Adds a 5% boost to the gas for web3 calls as to ensure tx's go through
-   *
-   * @param {string} gasRequired amount of gas required from `estimateGas`
-   */
-  const boostGas = gasRequired => {
-    const { BN } = Web3.utils;
-    const gasBoost = new BN(gasRequired, 10).divRound(new BN('20'));
-    return new BN(gasRequired, 10).add(gasBoost);
-  };
 
   return {
     getExchangeRate: async () => {
@@ -41,10 +32,6 @@ export default async function initializeLicensing(ujoConfig, opts = {}) {
       console.log('License');
 
       let wei;
-      if (eth) {
-        wei = web3.utils.toWei(eth, 'ether');
-      }
-
       if (eth) {
         wei = web3.utils.toWei(eth, 'ether');
       }

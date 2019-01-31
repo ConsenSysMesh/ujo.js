@@ -4,7 +4,7 @@ import moment from 'moment';
 
 export const decodeTxData = eventData =>
   // flattens the array and then decodes the values
-  flat(eventData).map(({ transactionHash, args: { nftcid, timeMinted } }) => [
+  flat(eventData).map(({ transactionHash, returnValues: { nftcid, timeMinted } }) => [
     nftcid,
     moment
       .unix(timeMinted.toString())
