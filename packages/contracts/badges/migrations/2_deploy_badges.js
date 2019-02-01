@@ -1,5 +1,5 @@
-import { TestOracle } from '../../oracle/contracts/TestOracle.sol';
-import { getContractAddress } from '../../../utils/dist';
+const TestOracle = require('../../oracle/build/contracts/TestOracle.json');
+const { getContractAddress } = require('../../../utils/dist');
 
 const BadgesProxy = artifacts.require('./UjoPatronageBadges.sol');
 const Functions = artifacts.require('./UjoPatronageBadgesFunctions.sol');
@@ -13,7 +13,7 @@ module.exports = (deployer, network, accounts) => {
       .then(deployedProxy => Functions.at(deployedProxy.address))
       .then(deployedBadgesProxy => {
         const testOracleAddress = getContractAddress(TestOracle, '1234');
-        return deployedBadgesProxy.setupBadges('0x0', testOracleAddress);
+        return deployedBadgesProxy.setupBadges('0x0000000000000000000000000000000000000000', testOracleAddress);
       });
   }
 };
