@@ -1,5 +1,5 @@
-const { TestOracle } = require('licensing-contracts');
-const { getContractAddress } = require('utils');
+import { TestOracle } from '../../oracle/contracts/TestOracle.sol';
+import { getContractAddress } from '../../../utils/dist';
 
 const BadgesProxy = artifacts.require('./UjoPatronageBadges.sol');
 const Functions = artifacts.require('./UjoPatronageBadgesFunctions.sol');
