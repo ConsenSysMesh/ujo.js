@@ -1,5 +1,4 @@
 import ujoInit from '../../config';
-import { getContractAddress } from '../../utils/dist';
 import initializeLicensing from '..';
 
 const keystore = require('./accounts');
