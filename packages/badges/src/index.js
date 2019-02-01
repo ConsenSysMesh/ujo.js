@@ -1,6 +1,6 @@
 import { utils } from 'web3';
 import moment from 'moment';
-import { getContractAddress } from '../../utils/dist';
+import { getContractAddress, dollarToWei, boostGas } from '../../utils/dist';
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts/badges';
 
 import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
@@ -136,7 +136,7 @@ export default async function initializeBadges(ujoConfig) {
         const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // get all the badge data
         // the empty array means all badges (not any specific tokenIds)
-        const badges = await getBadges([], networkId, mostRecentBlockNumber);
+        const badges = await getBadges(null, networkId, mostRecentBlockNumber);
         // add this snippet to unfurl music group data in badges and reformat badge data
         // try {
         //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
@@ -261,6 +261,36 @@ export default async function initializeBadges(ujoConfig) {
       }
       // is this right?
       return null;
+    },
+    /**
+     * mints a new badge
+     * @param {string} badgeBuyerAddress - the eth address of the owner of the new badge
+     * @param {string} uniqueIdentifier - the resource that the newly minted badge represents (cid in our case)
+     * @param {string[]} beneficiaries - an array of ethereum addresses who will receive the money paid for the badge
+     * @param {number[]} splits - an array of integers that represent the amount paid to each beneficiary (out of 100). Must be in the same order as the beneficiary
+     * @param {number} patronageBadgePrice - the amount the badge costs in USD
+     */
+    buyBadge: async (badgeBuyerAddress, uniqueIdentifier, beneficiaries, splits, patronageBadgePrice) => {
+      const exchangeRate = await ujoConfig.getExchangeRate();
+      const amountInWei = dollarToWei(patronageBadgePrice, exchangeRate);
+      const gasRequired = await patronageBadgeContract.methods
+        .mint(badgeBuyerAddress, uniqueIdentifier, beneficiaries, splits, patronageBadgePrice)
+        .estimateGas({
+          from: badgeBuyerAddress,
+          value: amountInWei,
+          to: patronageBadgeContract.address,
+        });
+
+      const gas = boostGas(gasRequired);
+
+      return patronageBadgeContract.methods
+        .mint(badgeBuyerAddress, uniqueIdentifier, beneficiaries, splits, patronageBadgePrice)
+        .send({
+          from: badgeBuyerAddress,
+          value: amountInWei,
+          to: patronageBadgeContract.address,
+          gas,
+        });
     },
   };
 }
