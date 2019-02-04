@@ -11,6 +11,10 @@ install all dependencies in the root and each sub-package
 build all the javascript source
 `npm run build`
 
+NOTE: the build command _must_ be run from the root directory right now, because the root directory's node modules has all the babel modules
+
+This makes sense because you won't need to compile the code when `npm install`ing this single package (npm should host compiled code)
+
 Compile contracts:
 
 (needs improvement)

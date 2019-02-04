@@ -1,13 +1,15 @@
-// import ujoInit from '../../config';
-// import initializeBadges from '..';
+import ujoInit from '../../config';
+import initializeBadges from '..';
 
-// const keystore = require('./accounts');
 
-describe('Badge tests', async () => {
-  // const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs');
+describe('Badge tests', () => {
+  const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs', { test: true });
 
-  it('gets the exchange connects to the badge smart contract', async () => {
-    // const ujoBadges = await initializeBadges(ujoConfig, { test: true });
-    // console.log(ujoBadges);
+  it('connects to the badge smart contract', async () => {
+    const ujoBadges = await initializeBadges(ujoConfig, { test: true });
+    const accounts = await ujoConfig.getAccounts()
+    const buyBadge = await ujoBadges.buyBadge(accounts[0], 'abc', [accounts[1]], [], 5)
+
+    console.log(buyBadge);
   });
 });
