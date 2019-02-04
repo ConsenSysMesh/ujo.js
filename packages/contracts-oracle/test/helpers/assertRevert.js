@@ -1,3 +1,4 @@
+/* eslint-disable arrow-parens */
 module.exports = {
   assertRevert: async promise => {
     try {

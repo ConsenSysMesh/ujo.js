@@ -4,8 +4,8 @@
 const TestLighthouse = artifacts.require('./TestLighthouse.sol');
 const Oracle = artifacts.require('./USDETHOracle.sol');
 
-contract('USDETHOracle', (accounts) => {
-  //
+/* eslint-disable arrow-parens */
+contract('USDETHOracle', accounts => {
   it('should fetch the price from the lighthouse', async () => {
     const l = await TestLighthouse.new({ from: accounts[0] });
     const o = await Oracle.new(l.address, { from: accounts[0] });

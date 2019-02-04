@@ -7,7 +7,7 @@ describe('Licensing tests', async () => {
   const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs', { test: true });
 
   it('should create a license', async () => {
-    // const accounts = keystore.keys.map(({ address }) => address);
+    const accounts = keystore.keys.map(({ address }) => address);
     const ujoLicensing = await initializeLicensing(ujoConfig);
     const cid = 'Qm';
     const buyer = '0xd287a4d332663312b541ee9bbcd522600d816d46';

@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 
-import { USDETHOracle, TestOracle } from '../../contracts/oracle';
+import { USDETHOracle, TestOracle } from '../../contracts-oracle';
 import { getContractAddress } from '../../utils';
 
 import ujoStorage from './ujoStorage';

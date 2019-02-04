@@ -1,5 +1,5 @@
-const TestOracle = require('../../oracle/build/contracts/TestOracle.json');
-const { getContractAddress } = require('../../../utils/dist');
+const TestOracle = require('../../contracts-oracle/build/contracts/TestOracle.json');
+const { getContractAddress } = require('../../utils/dist');
 
 const BadgesProxy = artifacts.require('./UjoPatronageBadges.sol');
 const Functions = artifacts.require('./UjoPatronageBadgesFunctions.sol');

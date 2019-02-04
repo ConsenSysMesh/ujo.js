@@ -1,5 +1,5 @@
 import { boostGas, getContractAddress } from '../../utils/dist';
-import { ETHUSDHandler } from '../../contracts/licensing';
+import { ETHUSDHandler } from '../../contracts-licensing';
 
 /**
  * Initialize Licensing

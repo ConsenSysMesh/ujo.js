@@ -1,5 +1,5 @@
 {
-  "name": "@ujomusic/licensing",
+  "name": "@ujomusic/contracts-licensing",
   "version": "0.0.0",
   "description": "The Ujo Handler Contracts",
   "main": "index.js",
