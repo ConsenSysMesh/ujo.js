@@ -10,7 +10,7 @@ const BigNumber = require('bignumber.js');
 
 const Web3 = require('web3');
 
-const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
+const web3 = new Web3('ws://localhost:8545');
 let badges;
 let badgesProxy;
 let oracle;

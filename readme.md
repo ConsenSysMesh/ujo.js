@@ -15,14 +15,14 @@ NOTE: the build command _must_ be run from the root directory right now, because
 
 This makes sense because you won't need to compile the code when `npm install`ing this single package (npm should host compiled code)
 
-Compile contracts:
+Starting a private ujo network with our smart contracts:
 
-(needs improvement)
-`cd` into each `contracts-` directory and run `truffle compile`
+start a ganache-cli instance with networkID specified
+`npm run private-chain`
 
-(need a script that injects correct network information into compiled JSON contracts for rinkeby and mainnet)
+compile && migrate contracts to private chain
+`npm run private-ujo-network`
 
-to run on ganache:
+This `cd`s into each smart contract package, compiles the contracts, and then migrates them to the chain
 
-make sure you have a ganache instance running on port 8545 and then run:
-`truffle migrate`
+`npm run clean-contracts` removes all the built smart contracts

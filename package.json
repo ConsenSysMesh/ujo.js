@@ -16,7 +16,18 @@
     "build:watch": "lerna run --parallel build -- -- --watch",
     "build:docs": "lerna run build:docs",
     "compile": "lerna run compile",
-    "execute": "npm run build && node packages/core/dist"
+    "execute": "npm run build && node packages/core/dist",
+    "clean-contracts": "rm -rf packages/contracts-oracle/build && rm -rf packages/contracts-badges/build && rm -rf packages/contracts-licensing/build",
+    "compile-oracle": "cd packages/contracts-oracle && truffle compile",
+    "compile-badges": "cd packages/contracts-badges && truffle compile",
+    "compile-licensing": "cd packages/contracts-licensing && truffle compile",
+    "compile-contracts": "npm run compile-oracle && npm run compile-badges && npm run compile-licensing",
+    "migrate-oracle": "cd packages/contracts-oracle && truffle migrate",
+    "migrate-badges": "cd packages/contracts-badges && truffle migrate",
+    "migrate-licensing": "cd packages/contracts-licensing && truffle migrate",
+    "migrate-contracts": "npm run migrate-oracle && npm run migrate-badges && npm run migrate-licensing",
+    "private-chain": "ganache-cli -b 3 -i 1234 -m='oyster virtual frown glove protect elder bottom organ axis replace project sweet'",
+    "private-ujo-network": "npm run clean-contracts && npm run compile-contracts && npm run migrate-contracts"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
