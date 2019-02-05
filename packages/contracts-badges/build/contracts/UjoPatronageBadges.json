@@ -1,0 +1,1168 @@
+{
+  "contractName": "UjoPatronageBadges",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x715018a6"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x8da5cb5b"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xf2fde38b"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_delegate",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipRenounced",
+      "type": "event",
+      "signature": "0xf8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c64820"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event",
+      "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_delegate",
+          "type": "address"
+        }
+      ],
+      "name": "setDelegate",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xca5eb5e1"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b5060405160408061033483398101604052805160209091015160008054600160a060020a03938416600160a060020a031991821617909155600180549390921692169190911790556102cd806100676000396000f3006080604052600436106100615763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663715018a6811461006b5780638da5cb5b14610080578063ca5eb5e1146100b1578063f2fde38b146100d2575b6100696100f3565b005b34801561007757600080fd5b5061006961010d565b34801561008c57600080fd5b50610095610179565b60408051600160a060020a039092168252519081900360200190f35b3480156100bd57600080fd5b50610069600160a060020a0360043516610188565b3480156100de57600080fd5b50610069600160a060020a03600435166101ce565b6100fb61010b565b61010b6101066101f1565b610200565b565b600054600160a060020a0316331461012457600080fd5b60008054604051600160a060020a03909116917ff8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c6482091a26000805473ffffffffffffffffffffffffffffffffffffffff19169055565b600054600160a060020a031681565b600054600160a060020a0316331461019f57600080fd5b6001805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0392909216919091179055565b600054600160a060020a031633146101e557600080fd5b6101ee81610224565b50565b600154600160a060020a031690565b3660008037600080366000845af43d6000803e80801561021f573d6000f35b3d6000fd5b600160a060020a038116151561023957600080fd5b60008054604051600160a060020a03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a03929092169190911790555600a165627a7a72305820d1a05f5b529ddf0eeac1bf2fc6a2ecb72fc083b55735b851c84c2df23f5cb1490029",
+  "deployedBytecode": "0x6080604052600436106100615763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663715018a6811461006b5780638da5cb5b14610080578063ca5eb5e1146100b1578063f2fde38b146100d2575b6100696100f3565b005b34801561007757600080fd5b5061006961010d565b34801561008c57600080fd5b50610095610179565b60408051600160a060020a039092168252519081900360200190f35b3480156100bd57600080fd5b50610069600160a060020a0360043516610188565b3480156100de57600080fd5b50610069600160a060020a03600435166101ce565b6100fb61010b565b61010b6101066101f1565b610200565b565b600054600160a060020a0316331461012457600080fd5b60008054604051600160a060020a03909116917ff8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c6482091a26000805473ffffffffffffffffffffffffffffffffffffffff19169055565b600054600160a060020a031681565b600054600160a060020a0316331461019f57600080fd5b6001805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0392909216919091179055565b600054600160a060020a031633146101e557600080fd5b6101ee81610224565b50565b600154600160a060020a031690565b3660008037600080366000845af43d6000803e80801561021f573d6000f35b3d6000fd5b600160a060020a038116151561023957600080fd5b60008054604051600160a060020a03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a03929092169190911790555600a165627a7a72305820d1a05f5b529ddf0eeac1bf2fc6a2ecb72fc083b55735b851c84c2df23f5cb1490029",
+  "sourceMap": "127:547:9:-;;;299:128;8:9:-1;5:2;;;30:1;27;20:12;5:2;299:128:9;;;;;;;;;;;;;;;;;;;679:5:3;:14;;-1:-1:-1;;;;;679:14:3;;;-1:-1:-1;;;;;;679:14:3;;;;;;;;379:20:9;;;;;;;;;;;;;;127:547;;;;;;",
+  "deployedSourceMap": "127:547:9:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;469:11:4;:9;:11::i;:::-;127:547:9;1143:121:3;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1143:121:3;;;;240:20;;8:9:-1;5:2;;;30:1;27;20:12;5:2;240:20:3;;;;;;;;-1:-1:-1;;;;;240:20:3;;;;;;;;;;;;;;481:94:9;;8:9:-1;5:2;;;30:1;27;20:12;5:2;-1:-1;481:94:9;-1:-1:-1;;;;;481:94:9;;;;;1436:109:3;;8:9:-1;5:2;;;30:1;27;20:12;5:2;-1:-1;1436:109:3;-1:-1:-1;;;;;1436:109:3;;;;;2181:100:4;2221:15;:13;:15::i;:::-;2246:28;2256:17;:15;:17::i;:::-;2246:9;:28::i;:::-;2181:100::o;1143:121:3:-;841:5;;-1:-1:-1;;;;;841:5:3;827:10;:19;819:28;;;;;;1223:5;;;1204:25;;-1:-1:-1;;;;;1223:5:3;;;;1204:25;;;1255:1;1239:18;;-1:-1:-1;;1239:18:3;;;1143:121::o;240:20::-;;;-1:-1:-1;;;;;240:20:3;;:::o;481:94:9:-;841:5:3;;-1:-1:-1;;;;;841:5:3;827:10;:19;819:28;;;;;;548:8:9;:20;;-1:-1:-1;;548:20:9;-1:-1:-1;;;;;548:20:9;;;;;;;;;;481:94::o;1436:109:3:-;841:5;;-1:-1:-1;;;;;841:5:3;827:10;:19;819:28;;;;;;1509:29;1528:9;1509:18;:29::i;:::-;1436:109;:::o;581:91:9:-;657:8;;-1:-1:-1;;;;;657:8:9;581:91;:::o;918:861:4:-;1290:12;1287:1;1284;1271:32;1498:1;1495;1481:12;1478:1;1462:14;1457:3;1444:56;1574:14;1571:1;1568;1553:36;1610:6;1677:36;;;;1746:14;1743:1;1736:25;1677:36;1696:14;1693:1;1686:25;1690:185:3;-1:-1:-1;;;;;1764:23:3;;;;1756:32;;;;;;1824:5;;;1803:38;;-1:-1:-1;;;;;1803:38:3;;;;1824:5;;;1803:38;;;1851:5;:17;;-1:-1:-1;;1851:17:3;-1:-1:-1;;;;;1851:17:3;;;;;;;;;;1690:185::o",
+  "source": "pragma solidity ^0.4.24;\nimport \"./Proxy.sol\";\nimport \"./Ownable.sol\";\n\n/*\nContains refactor of tokenURI\nand badge numbers\n*/\n\ncontract UjoPatronageBadges is Proxy, Ownable {\n\n    /* --- */\n    address internal delegate;\n    /* --- */\n\n    // solhint-disable-next-line visibility-modifier-order\n    constructor(address _owner, address _delegate) Ownable(_owner) public {\n        delegate = _delegate; //starting delegate.\n    }\n\n    /* upgrade or change functions of badges */\n    function setDelegate(address _delegate) public onlyOwner {\n        delegate = _delegate;\n    }\n\n    function _implementation() internal view returns (address) {\n        return delegate;\n    }\n}\n",
+  "sourcePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/UjoPatronageBadges.sol",
+  "ast": {
+    "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/UjoPatronageBadges.sol",
+    "exportedSymbols": {
+      "UjoPatronageBadges": [
+        1564
+      ]
+    },
+    "id": 1565,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1520,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:9"
+      },
+      {
+        "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/Proxy.sol",
+        "file": "./Proxy.sol",
+        "id": 1521,
+        "nodeType": "ImportDirective",
+        "scope": 1565,
+        "sourceUnit": 657,
+        "src": "25:21:9",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/Ownable.sol",
+        "file": "./Ownable.sol",
+        "id": 1522,
+        "nodeType": "ImportDirective",
+        "scope": 1565,
+        "sourceUnit": 619,
+        "src": "47:23:9",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1523,
+              "name": "Proxy",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 656,
+              "src": "158:5:9",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Proxy_$656",
+                "typeString": "contract Proxy"
+              }
+            },
+            "id": 1524,
+            "nodeType": "InheritanceSpecifier",
+            "src": "158:5:9"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1525,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 618,
+              "src": "165:7:9",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$618",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 1526,
+            "nodeType": "InheritanceSpecifier",
+            "src": "165:7:9"
+          }
+        ],
+        "contractDependencies": [
+          618,
+          656
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 1564,
+        "linearizedBaseContracts": [
+          1564,
+          618,
+          656
+        ],
+        "name": "UjoPatronageBadges",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 1528,
+            "name": "delegate",
+            "nodeType": "VariableDeclaration",
+            "scope": 1564,
+            "src": "194:25:9",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 1527,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "194:7:9",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 1542,
+              "nodeType": "Block",
+              "src": "369:58:9",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1540,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 1538,
+                      "name": "delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1528,
+                      "src": "379:8:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 1539,
+                      "name": "_delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1532,
+                      "src": "390:9:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "379:20:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 1541,
+                  "nodeType": "ExpressionStatement",
+                  "src": "379:20:9"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1543,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 1535,
+                    "name": "_owner",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1530,
+                    "src": "354:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 1536,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 1534,
+                  "name": "Ownable",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 618,
+                  "src": "346:7:9",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_Ownable_$618_$",
+                    "typeString": "type(contract Ownable)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "346:15:9"
+              }
+            ],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1533,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1530,
+                  "name": "_owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1543,
+                  "src": "311:14:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1529,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "311:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1532,
+                  "name": "_delegate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1543,
+                  "src": "327:17:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1531,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "327:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "310:35:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1537,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "369:0:9"
+            },
+            "scope": 1564,
+            "src": "299:128:9",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1554,
+              "nodeType": "Block",
+              "src": "538:37:9",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1552,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 1550,
+                      "name": "delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1528,
+                      "src": "548:8:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 1551,
+                      "name": "_delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1545,
+                      "src": "559:9:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "548:20:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 1553,
+                  "nodeType": "ExpressionStatement",
+                  "src": "548:20:9"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1555,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 1548,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 1547,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 566,
+                  "src": "528:9:9",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "528:9:9"
+              }
+            ],
+            "name": "setDelegate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1546,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1545,
+                  "name": "_delegate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1555,
+                  "src": "502:17:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1544,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "502:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "501:19:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1549,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "538:0:9"
+            },
+            "scope": 1564,
+            "src": "481:94:9",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1562,
+              "nodeType": "Block",
+              "src": "640:32:9",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1560,
+                    "name": "delegate",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1528,
+                    "src": "657:8:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 1559,
+                  "id": 1561,
+                  "nodeType": "Return",
+                  "src": "650:15:9"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1563,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "_implementation",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1556,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "605:2:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1559,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1558,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1563,
+                  "src": "631:7:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1557,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "631:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "630:9:9"
+            },
+            "scope": 1564,
+            "src": "581:91:9",
+            "stateMutability": "view",
+            "superFunction": 632,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 1565,
+        "src": "127:547:9"
+      }
+    ],
+    "src": "0:675:9"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/UjoPatronageBadges.sol",
+    "exportedSymbols": {
+      "UjoPatronageBadges": [
+        1564
+      ]
+    },
+    "id": 1565,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1520,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:9"
+      },
+      {
+        "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/Proxy.sol",
+        "file": "./Proxy.sol",
+        "id": 1521,
+        "nodeType": "ImportDirective",
+        "scope": 1565,
+        "sourceUnit": 657,
+        "src": "25:21:9",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/alexander/Development/ujo.js/packages/contracts-badges/contracts/Ownable.sol",
+        "file": "./Ownable.sol",
+        "id": 1522,
+        "nodeType": "ImportDirective",
+        "scope": 1565,
+        "sourceUnit": 619,
+        "src": "47:23:9",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1523,
+              "name": "Proxy",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 656,
+              "src": "158:5:9",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Proxy_$656",
+                "typeString": "contract Proxy"
+              }
+            },
+            "id": 1524,
+            "nodeType": "InheritanceSpecifier",
+            "src": "158:5:9"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1525,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 618,
+              "src": "165:7:9",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$618",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 1526,
+            "nodeType": "InheritanceSpecifier",
+            "src": "165:7:9"
+          }
+        ],
+        "contractDependencies": [
+          618,
+          656
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 1564,
+        "linearizedBaseContracts": [
+          1564,
+          618,
+          656
+        ],
+        "name": "UjoPatronageBadges",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 1528,
+            "name": "delegate",
+            "nodeType": "VariableDeclaration",
+            "scope": 1564,
+            "src": "194:25:9",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 1527,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "194:7:9",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 1542,
+              "nodeType": "Block",
+              "src": "369:58:9",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1540,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 1538,
+                      "name": "delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1528,
+                      "src": "379:8:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 1539,
+                      "name": "_delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1532,
+                      "src": "390:9:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "379:20:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 1541,
+                  "nodeType": "ExpressionStatement",
+                  "src": "379:20:9"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1543,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 1535,
+                    "name": "_owner",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1530,
+                    "src": "354:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 1536,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 1534,
+                  "name": "Ownable",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 618,
+                  "src": "346:7:9",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_Ownable_$618_$",
+                    "typeString": "type(contract Ownable)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "346:15:9"
+              }
+            ],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1533,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1530,
+                  "name": "_owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1543,
+                  "src": "311:14:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1529,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "311:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1532,
+                  "name": "_delegate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1543,
+                  "src": "327:17:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1531,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "327:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "310:35:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1537,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "369:0:9"
+            },
+            "scope": 1564,
+            "src": "299:128:9",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1554,
+              "nodeType": "Block",
+              "src": "538:37:9",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1552,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 1550,
+                      "name": "delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1528,
+                      "src": "548:8:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 1551,
+                      "name": "_delegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1545,
+                      "src": "559:9:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "548:20:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 1553,
+                  "nodeType": "ExpressionStatement",
+                  "src": "548:20:9"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1555,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 1548,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 1547,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 566,
+                  "src": "528:9:9",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "528:9:9"
+              }
+            ],
+            "name": "setDelegate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1546,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1545,
+                  "name": "_delegate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1555,
+                  "src": "502:17:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1544,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "502:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "501:19:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1549,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "538:0:9"
+            },
+            "scope": 1564,
+            "src": "481:94:9",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1562,
+              "nodeType": "Block",
+              "src": "640:32:9",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1560,
+                    "name": "delegate",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1528,
+                    "src": "657:8:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 1559,
+                  "id": 1561,
+                  "nodeType": "Return",
+                  "src": "650:15:9"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1563,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "_implementation",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1556,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "605:2:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1559,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1558,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1563,
+                  "src": "631:7:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1557,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "631:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "630:9:9"
+            },
+            "scope": 1564,
+            "src": "581:91:9",
+            "stateMutability": "view",
+            "superFunction": 632,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 1565,
+        "src": "127:547:9"
+      }
+    ],
+    "src": "0:675:9"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {
+    "1234": {
+      "events": {},
+      "links": {},
+      "address": "0x533FA2a8DaB065C84A0F83724A2f1847f6FEbB84",
+      "transactionHash": "0xf62a8b450340c936b59638c78c7971fbfa5ba53df7605e33960249e1a4b838b0"
+    }
+  },
+  "schemaVersion": "3.0.1",
+  "updatedAt": "2019-02-04T20:26:03.776Z",
+  "devdoc": {
+    "methods": {
+      "renounceOwnership()": {
+        "details": "Allows the current owner to relinquish control of the contract."
+      },
+      "transferOwnership(address)": {
+        "details": "Allows the current owner to transfer control of the contract to a newOwner.",
+        "params": {
+          "_newOwner": "The address to transfer ownership to."
+        }
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "renounceOwnership()": {
+        "notice": "Renouncing to ownership will leave the contract without an owner. It will not be possible to call the functions with the `onlyOwner` modifier anymore."
+      }
+    }
+  }
+}
