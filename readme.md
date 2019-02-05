@@ -23,6 +23,18 @@ start a ganache-cli instance with networkID specified
 compile && migrate contracts to private chain
 `npm run private-ujo-network`
 
+[ADD A NOTE - ADD .ENV FILE]
+
 This `cd`s into each smart contract package, compiles the contracts, and then migrates them to the chain
 
 `npm run clean-contracts` removes all the built smart contracts
+
+## testing
+
+Make sure you've run: `npm run private-ujo-network` to have a private chain up and running
+
+from the root directory: `yarn test`
+
+or cd into any single package, and run `yarn test`
+
+(right now we get stuck on the issue with non-payable constructor)
