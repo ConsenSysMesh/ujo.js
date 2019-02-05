@@ -1,4 +1,4 @@
-import { utils } from 'web3';
+import * as utils from 'web3-utils';
 import moment from 'moment';
 import { getContractAddress, dollarToWei, boostGas } from '../../utils/dist';
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts-badges';
