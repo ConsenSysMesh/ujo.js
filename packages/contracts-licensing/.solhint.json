@@ -6,6 +6,7 @@
     "avoid-sha3": "warn",
     "compiler-fixed": false,
     "indent": ["warn", 4],
-    "max-line-length": 150
+    "max-line-length": 150,
+    "separate-by-one-line-in-contract": "warn"
   }
 }

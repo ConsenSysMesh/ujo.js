@@ -33,7 +33,7 @@ contract('EthUSDHandler', accounts => {
 
   it('should transfer money to one beneficiary (buyer == msg.sender)', async () => {
     const beneficiarybalance = await web3.eth.getBalance(accounts[0]);
-    const twoEther = web3.toWei(2, 'ether');
+    const twoEther = web3.utils.toBN(web3.utils.toWei('2', 'ether'));
 
     await handler.pay(
       'cid',
@@ -42,16 +42,16 @@ contract('EthUSDHandler', accounts => {
       [accounts[0]], // beneficiaries
       [twoEther], // amounts
       [], // notifiers
-      { from: accounts[3], value: web3.toWei(2, 'ether') },
+      { from: accounts[3], value: web3.utils.toWei('2', 'ether') },
     );
-
-    const postBeneficiarybalance = beneficiarybalance.add(twoEther);
-    assert.equal(web3.eth.getBalance(accounts[0]).toString(), postBeneficiarybalance.toString());
+    const postBeneficiarybalance = web3.utils.toBN(beneficiarybalance).add(twoEther);
+    const currentBalance = await web3.eth.getBalance(accounts[0]);
+    assert.equal(currentBalance.toString(), postBeneficiarybalance.toString());
   });
 
   it('should transfer money to one beneficiary (buyer == msg.sender & test notification)', async () => {
     const beneficiarybalance = await web3.eth.getBalance(accounts[0]);
-    const twoEther = web3.toWei(2, 'ether');
+    const twoEther = web3.utils.toBN(web3.utils.toWei('2', 'ether'));
 
     await handler.pay(
       'cid',
@@ -60,11 +60,12 @@ contract('EthUSDHandler', accounts => {
       [accounts[0]], // beneficiaries
       [twoEther], // amounts
       [testNotification.address], // notifiers
-      { from: accounts[3], value: web3.toWei(2, 'ether') },
+      { from: accounts[3], value: web3.utils.toWei('2', 'ether') },
     );
 
-    const postBeneficiarybalance = beneficiarybalance.add(twoEther);
-    assert.equal(web3.eth.getBalance(accounts[0]).toString(), postBeneficiarybalance.toString());
+    const postBeneficiarybalance = web3.utils.toBN(beneficiarybalance).add(twoEther);
+    const currentBalance = await web3.eth.getBalance(accounts[0]);
+    assert.equal(currentBalance.toString(), postBeneficiarybalance.toString());
 
     const cid = await testNotification.getCid.call(0);
     const beneficiaries = await testNotification.getBeneficiaries.call(0);
@@ -84,7 +85,7 @@ contract('EthUSDHandler', accounts => {
 
   // transfer to one beneficiary with mismatch of amounts to msg.value (should fail)
   it('transfer to one beneficiary with mismatch of amounts to msg', async () => {
-    const oneEther = web3.toWei(1, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
 
     await assertRevert(
       handler.pay(
@@ -94,14 +95,14 @@ contract('EthUSDHandler', accounts => {
         [accounts[0]], // beneficiaries
         [oneEther], // amounts [mismatch of fund amounts]
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(2, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('2', 'ether') },
       ),
     );
   });
 
   // transfer to one beneficiary with mistmatch of amount length (should fail)
   it('transfer to one beneficiary with mismatch of amount length (should fail)', async () => {
-    const oneEther = web3.toWei(1, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
 
     await assertRevert(
       handler.pay(
@@ -111,14 +112,14 @@ contract('EthUSDHandler', accounts => {
         [accounts[0]], // beneficiaries
         [oneEther, oneEther], // amounts [mismatch of amount length
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(1, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('1', 'ether') },
       ),
     );
   });
 
   // transfer to one beneficiary with incorrect oracle (should fail)
   it('transfer to one beneficiary with incorrect oracle (should fail)', async () => {
-    const oneEther = web3.toWei(1, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
 
     await assertRevert(
       handler.pay(
@@ -128,7 +129,7 @@ contract('EthUSDHandler', accounts => {
         [accounts[0]], // beneficiaries
         [oneEther], // amounts
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(1, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('1', 'ether') },
       ),
     );
   });
@@ -146,7 +147,7 @@ contract('EthUSDHandler', accounts => {
 
   // transfer to no beneficiaries with beneficiaries & amounts specified (should fail)
   it('transfer to no beneficiaries with beneficiaries & amounts specified (should fail)', async () => {
-    const oneEther = web3.toWei(1, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
 
     await assertRevert(
       handler.pay(
@@ -156,7 +157,7 @@ contract('EthUSDHandler', accounts => {
         [], // beneficiaries
         [oneEther],
         [],
-        { from: accounts[3], value: web3.toWei(1, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('1', 'ether') },
       ),
     );
   });
@@ -165,8 +166,8 @@ contract('EthUSDHandler', accounts => {
   it('transfer to multiple beneficiaries (buyer == msg.sender)', async () => {
     const beneficiaryOneBalance = await web3.eth.getBalance(accounts[0]);
     const beneficiaryTwoBalance = await web3.eth.getBalance(accounts[1]);
-    // const twoEther = web3.toWei(2, 'ether');
-    const oneEther = web3.toWei(1, 'ether');
+    // const twoEther = web3.utils.toWei(2, 'ether');
+    const oneEther = web3.utils.toBN(web3.utils.toWei('1', 'ether'));
 
     await handler.pay(
       'cid',
@@ -175,22 +176,24 @@ contract('EthUSDHandler', accounts => {
       [accounts[0], accounts[1]], // beneficiaries
       [oneEther, oneEther], // amounts
       [], // notifiers
-      { from: accounts[3], value: web3.toWei(2, 'ether') },
+      { from: accounts[3], value: web3.utils.toWei('2', 'ether') },
     );
 
     // first beneficiary
-    const postBeneficiaryOneBalance = beneficiaryOneBalance.add(oneEther);
-    assert.equal(web3.eth.getBalance(accounts[0]).toString(), postBeneficiaryOneBalance.toString());
+    const postBeneficiaryOneBalance = web3.utils.toBN(beneficiaryOneBalance).add(oneEther);
+    let currentBalance = await web3.eth.getBalance(accounts[0]);
+    assert.equal(currentBalance.toString(), postBeneficiaryOneBalance.toString());
 
     // second beneficiary
-    const postBeneficiaryTwoBalance = beneficiaryTwoBalance.add(oneEther);
-    assert.equal(web3.eth.getBalance(accounts[1]).toString(), postBeneficiaryTwoBalance.toString());
+    const postBeneficiaryTwoBalance = web3.utils.toBN(beneficiaryTwoBalance).add(oneEther);
+    currentBalance = await web3.eth.getBalance(accounts[1]);
+    assert.equal(currentBalance.toString(), postBeneficiaryTwoBalance.toString());
   });
 
   // transfer to multiple beneficiaries with amounts mismatch (should fail)
   it(' transfer to multiple beneficiaries with amounts length (fewer) mismatch (should fail)', async () => {
-    const oneEther = web3.toWei(1, 'ether');
-    const twoEther = web3.toWei(2, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
+    const twoEther = web3.utils.toWei('2', 'ether');
     await assertRevert(
       handler.pay(
         'cid',
@@ -199,14 +202,14 @@ contract('EthUSDHandler', accounts => {
         [accounts[0]], // beneficiaries
         [oneEther, twoEther], // amounts
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(3, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('3', 'ether') },
       ),
     );
   });
 
   it(' transfer to multiple beneficiaries with amounts length (more) mismatch (should fail)', async () => {
-    const oneEther = web3.toWei(1, 'ether');
-    const twoEther = web3.toWei(2, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
+    const twoEther = web3.utils.toWei('2', 'ether');
     await assertRevert(
       handler.pay(
         'cid',
@@ -215,14 +218,14 @@ contract('EthUSDHandler', accounts => {
         [accounts[0], accounts[1], accounts[2]], // beneficiaries
         [oneEther, twoEther], // amounts
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(3, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('3', 'ether') },
       ),
     );
   });
 
   // transfer to multiple beneficiaries with msg.value mismatch (should fail)
   it('transfer to multiple beneficiaries with msg.value mismatch (should fail)', async () => {
-    const oneEther = web3.toWei(1, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
     await assertRevert(
       handler.pay(
         'cid',
@@ -231,14 +234,14 @@ contract('EthUSDHandler', accounts => {
         [accounts[0], accounts[1]], // beneficiaries
         [oneEther, oneEther], // amounts
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(3, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('3', 'ether') },
       ),
     );
   });
 
   // transfer to multiple beneficiaries with one throwing
   it('transfer to multiple beneficiaries with one throwing', async () => {
-    const oneEther = web3.toWei(1, 'ether');
+    const oneEther = web3.utils.toWei('1', 'ether');
     await assertRevert(
       handler.pay(
         'cid',
@@ -247,7 +250,7 @@ contract('EthUSDHandler', accounts => {
         [accounts[0], testNotification.address], // beneficiaries
         [oneEther, oneEther], // amounts
         [], // notifiers
-        { from: accounts[3], value: web3.toWei(2, 'ether') },
+        { from: accounts[3], value: web3.utils.toWei('2', 'ether') },
       ),
     );
   });
