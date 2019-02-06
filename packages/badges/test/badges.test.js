@@ -125,7 +125,7 @@ describe('initialize badges', () => {
 
     xit('throws a helpful error message if there is an error fetching badges', async () => {});
 
-    xit('throws an error if no or invalid address is passed as argument', async () => {});
+    xit('throws an error if no address or an invalid address is passed as argument', async () => {});
   });
 
   describe('getBadgesMintedFor', () => {
@@ -170,6 +170,30 @@ describe('initialize badges', () => {
 
       assert(Array.isArray(zero), 'return value should be an array');
       assert.strictEqual(zero.length, 0, 'zero badges should have been returned');
+    });
+
+    describe('getBadge', () => {
+      let ujoBadges;
+      beforeEach(async () => {
+        ujoBadges = await initializeBadges(ujoConfig);
+      });
+
+      it('returns a web31.0 tx receipt', async () => {});
+
+      it('returns null if transaction has not been mined', async () => {});
+
+      it('returns the standardized badge data with the tx receipt', async () => {});
+
+      it('throws an error if it cannot get the tx receipt', async () => {});
+    });
+
+    describe('buyBadge', () => {
+      let ujoBadges;
+      let accounts;
+      beforeEach(async () => {
+        ujoBadges = await initializeBadges(ujoConfig);
+        accounts = await ujoConfig.getAccounts();
+      });
     });
   });
 });

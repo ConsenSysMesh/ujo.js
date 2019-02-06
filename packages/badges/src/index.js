@@ -1,19 +1,13 @@
-import * as utils from 'web3-utils';
 import moment from 'moment';
 import { getContractAddress, dollarToWei, boostGas } from '../../utils/dist';
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts-badges';
 
-import { decodeTxData, convertBadgeIdsToHex, determineStartBlock } from './helpers';
+import { decodeTxData, determineStartBlock } from './helpers';
 
 /**
  * the initializeBadges method provides an API for interacting with ujo patronage badges
  * @param {Object} ujoConfig - the config object returned by ujoInit @see [link]
  * @returns {Object} - an interface for interacting with badges
- *
- * @example
- * import ujoInit from 'ujo.js/config'
- * const ujoConfig = ujoInit('http://127.0.0.1:8545')
- * const ujoBadges = await initializeBadges(ujoConfig)
  */
 export default async function initializeBadges(ujoConfig) {
   /* --- Initial configuration of the badges --- */
@@ -23,30 +17,10 @@ export default async function initializeBadges(ujoConfig) {
   const patronageBadgesProxyAddress = getContractAddress(UjoPatronageBadges, networkId);
   const patronageBadgeContract = new web3.eth.Contract(UjoPatronageBadgesFunctions.abi, patronageBadgesProxyAddress);
 
-  /* --- Sample storage provider setup --- */
+  // Sample storage provider setup
   const storageProvider = ujoConfig.getStorageProvider();
 
-  /*
-    Functions that need reference to closed over badge context
-    ETHEREUM EVENT LOG PARALLELIZER
-    instead of linearly going through ethereum and looking at the event logs of each block
-    we go through many chunks of ethereum at the same time, and then join the results together
-
-    This is for performance optimization:
-    Instead of one call to `getPastEvents`, which looks like:
-    [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
-    ^              c h e c k   o n e   b l o c k   a t   a   t i m e                  ^
-    start                                                                             end
-    We do many chunks at the same time, where blocks are checked linearly in each chunk:
-
-    [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
-    |-------------||-------------||-------------||-------------||-------------||-------|
-    ^             ^^             ^^             ^^             ^^             ^^       ^
-    blockIncrement blockIncrement blockIncrement blockIncrement blockIncrement finalIncrement
-    Now, 6 simulataneous calls were made to `getPastEvents`, which is still O(n) time complexity
-    but could make a significant difference in the future when ethereum gets extremely long
-   */
-  async function findEventData(badgesByAddress, blockIncrement, startBlock, endBlock) {
+  async function findEventData(tokenIds, blockIncrement, startBlock, endBlock) {
     if (patronageBadgeContract) {
       // create an array to store parallelized calls to ethereum block chunks
       const blockIncrements = new Array(Math.ceil((endBlock - startBlock) / blockIncrement)).fill();
@@ -54,13 +28,13 @@ export default async function initializeBadges(ujoConfig) {
       // all of these calls get invoked at one after the other, but the entire promise
       // will not resolve until all have completed
       return Promise.all(
-        blockIncrements.map((ele, idx) => {
+        blockIncrements.map((_, idx) => {
           // craft variables necessary to retrieve specific event logs from ethereum.
           let options;
           // if were at the first chunk of blocks...
           if (idx === 0)
             options = {
-              filter: { tokenId: badgesByAddress },
+              filter: { tokenId: tokenIds },
               fromBlock: startBlock.toString(),
               toBlock: (startBlock + blockIncrement).toString(),
             };
@@ -68,7 +42,7 @@ export default async function initializeBadges(ujoConfig) {
           else {
             const fromBlock = (startBlock + blockIncrement * idx + 1).toString();
             const toBlock = (startBlock + blockIncrement * (idx + 1)).toString();
-            const filter = { tokenId: badgesByAddress };
+            const filter = { tokenId: tokenIds };
 
             options = { fromBlock, toBlock, filter };
           }
@@ -80,12 +54,13 @@ export default async function initializeBadges(ujoConfig) {
     return new Error({ error: 'Attempted to get badge data with no smart contract' });
   }
 
-  async function getBadges(badgesByAddress, network, endBlock) {
+  async function getBadges(tokenIds, network) {
+    const endBlock = await ujoConfig.getBlockNumber();
     const startBlock = determineStartBlock(network);
     const blockIncrement = 5000;
     // parse event logs to look for badgeHexes, from the patronage badge contract from start block to end block
     // parallelizes requests by parsing event logs in chunks of "blockIncrement"
-    const encodedTxData = await findEventData(badgesByAddress, blockIncrement, startBlock, endBlock);
+    const encodedTxData = await findEventData(tokenIds, blockIncrement, startBlock, endBlock);
     // reformats tx data to be useful for clients and/or storage layer
     const eventData = decodeTxData(encodedTxData);
     return eventData;
@@ -112,31 +87,17 @@ export default async function initializeBadges(ujoConfig) {
     /**
      * getBadgeContract is a getter method for the ujo badges contract
      * @returns {Object} instance of the proxy ujo badges truffle contract
-     *
-     * @example
-     * import ujoInit from 'ujo.js/config'
-     * const ujoConfig = ujoInit(<Web3Provider>)
-     * const ujoBadges = await initializeBadges(ujoConfig)
-     * const badgeContract = ujoBadges.getBadgeContract()
      */
     getBadgeContract: () => patronageBadgeContract,
     /**
      * getAllBadges is a getter method for every single badge in the proxy contract
      * @returns {Promise<Object[], Error>} an array of badges. See {@link getBadge} for what each badge looks like in the returned array
-     *
-     * @example
-     * import ujoInit from 'ujo.js/config'
-     * const ujoConfig = ujoInit(<Web3Provider>)
-     * const ujoBadges = await initializeBadges(ujoConfig)
-     * const badges = await ujoBadges.getBadgeContract()
      */
     getAllBadges: async () => {
       try {
-        // get the latest block number
-        const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // get all the badge data
         // the empty array means all badges (not any specific tokenIds)
-        const badges = await getBadges(null, networkId, mostRecentBlockNumber);
+        const badges = await getBadges(null, networkId);
         // add this snippet to unfurl music group data in badges and reformat badge data
         // try {
         //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
@@ -152,20 +113,12 @@ export default async function initializeBadges(ujoConfig) {
      * getBadgesOwnedByAddress is a getter method for every single badge owned by ethereum address
      * @param {string} ethereumAddress - the ethereum address owner of returned badges
      * @returns {Promise<Object[], Error>} an array of badges. See {@link getBadge} for what each badge looks like in the returned array
-     *
-     * @example
-     * import ujoInit from 'ujo.js/config'
-     * const ujoConfig = ujoInit(<Web3Provider>)
-     * const ujoBadges = await initializeBadges(ujoConfig)
-     * const badges = await ujoBadges.getBadgesOwnedByAddress('0xE8F08D7dc98be694CDa49430CA01595776909Eac')
      */
     getBadgesOwnedByAddress: async ethereumAddress => {
       try {
-        // get the networkID and latest block number
-        const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // fetch the token IDs owned by ethereum address
-        const badgesByAddress = await patronageBadgeContract.methods.getAllTokens(ethereumAddress).call();
-        const badges = await getBadges(badgesByAddress, networkId, mostRecentBlockNumber);
+        const tokenIds = await patronageBadgeContract.methods.getAllTokens(ethereumAddress).call();
+        const badges = await getBadges(tokenIds, networkId);
         /* --- add this snippet to unfurl music group metadata within the badges and reformat the badges --- */
         // try {
         //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
@@ -182,12 +135,6 @@ export default async function initializeBadges(ujoConfig) {
      * getBadgesMintedFor is a getter method for every single badge representing a unique id (in our case music group IPFS cid) by ethereum address
      * @param {string} uniqueId - the unique id that the badge represents (in our case it's an IPFS cid)
      * @returns {Promise<Object[], Error>} an array of badges. See {@link getBadge} for what each badge looks like in the returned array
-     *
-     * @example
-     * import ujoInit from 'ujo.js/config'
-     * const ujoConfig = ujoInit(<Web3Provider>)
-     * const ujoBadges = await initializeBadges(ujoConfig)
-     * const badges = await ujoBadges.getBadgesMintedFor('zdpuAviMaYYFTBiW54TLV11h93mB1txF6zccoF5fKpu9nsub8')
      */
     getBadgesMintedFor: async uniqueIdentifier => {
       const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
