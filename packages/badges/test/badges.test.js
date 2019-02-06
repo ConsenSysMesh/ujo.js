@@ -68,7 +68,7 @@ describe('initialize badges', () => {
       assert.strictEqual(noBadges.length, 0, "there shouldn't be a badge in the contract");
     });
 
-    xit('returns an array of badges when badges exist', async () => {
+    it('returns an array of badges when badges exist', async () => {
       const badges = await ujoBadges.getAllBadges();
       const badgeCount = badges.length;
       const accounts = await ujoConfig.getAccounts();
@@ -111,7 +111,6 @@ describe('initialize badges', () => {
     });
 
     it('returns the correct number of badges per owner', async () => {
-      // const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
       const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
 
       const badgeContract = ujoBadges.getBadgeContract();
@@ -122,6 +121,55 @@ describe('initialize badges', () => {
         tokensOwnedByAddress.length,
         'wrong number of badges returned for address',
       );
+    });
+
+    xit('throws a helpful error message if there is an error fetching badges', async () => {});
+
+    xit('throws an error if no or invalid address is passed as argument', async () => {});
+  });
+
+  describe('getBadgesMintedFor', () => {
+    let ujoBadges;
+    let accounts;
+    beforeEach(async () => {
+      ujoBadges = await initializeBadges(ujoConfig);
+      accounts = await ujoConfig.getAccounts();
+    });
+
+    it('returns an empty array if the unique string does not have any badges minted', async () => {
+      const zeroBadges = await ujoBadges.getBadgesMintedFor('xxxxxx');
+      assert(Array.isArray(zeroBadges), 'return value should be an array');
+      assert.strictEqual(zeroBadges.length, 0, 'no badges should have been returned');
+    });
+
+    it('returns the correct number of badges per unique string', async () => {
+      const randomCid = Math.random()
+        .toString(36)
+        .substring(7);
+
+      await ujoBadges.buyBadge(accounts[5], randomCid, [accounts[6]], [], 5);
+      const singleBadge = await ujoBadges.getBadgesMintedFor(randomCid);
+      assert(Array.isArray(singleBadge), 'return value should be an array');
+      assert.strictEqual(singleBadge.length, 1, 'one badge should have been returned');
+    });
+
+    it('returns an empty array for falsey input values', async () => {
+      const emptyString = await ujoBadges.getBadgesMintedFor('');
+      const noArgument = await ujoBadges.getBadgesMintedFor();
+      const nothing = await ujoBadges.getBadgesMintedFor(null);
+      const zero = await ujoBadges.getBadgesMintedFor(0);
+
+      assert(Array.isArray(emptyString), 'return value should be an array');
+      assert.strictEqual(emptyString.length, 0, 'zero badges should have been returned');
+
+      assert(Array.isArray(noArgument), 'return value should be an array');
+      assert.strictEqual(noArgument.length, 0, 'zero badges should have been returned');
+
+      assert(Array.isArray(nothing), 'return value should be an array');
+      assert.strictEqual(nothing.length, 0, 'zero badges should have been returned');
+
+      assert(Array.isArray(zero), 'return value should be an array');
+      assert.strictEqual(zero.length, 0, 'zero badges should have been returned');
     });
   });
 });

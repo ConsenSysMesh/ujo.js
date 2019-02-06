@@ -193,8 +193,7 @@ export default async function initializeBadges(ujoConfig) {
       const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
       // get all the badge data
       // the empty array means all badges (not any specific tokenIds)
-      const badges = await getBadges([], networkId, mostRecentBlockNumber);
-
+      const badges = await getBadges(null, networkId, mostRecentBlockNumber);
       // do we want to return any other data with these badges?
       return badges.filter(badge => badge[0] === uniqueIdentifier);
       // add this snippet to unfurl music group information in badge and reformat badge data
