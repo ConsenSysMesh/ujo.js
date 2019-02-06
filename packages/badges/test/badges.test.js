@@ -6,7 +6,7 @@ import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts
 
 /* make sure to start a new fresh instance of ganache before running the tests */
 describe('initialize badges', () => {
-  const ujoConfig = ujoInit('https://rinkeby.infura.io/v3/d00a0a90e5ec4086987529d063643d9c', 'ipfs', { test: true });
+  const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs', { test: true });
 
   it('returns a badge package object with 6 methods', async () => {
     const ujoBadges = await initializeBadges(ujoConfig);
@@ -39,7 +39,7 @@ describe('initialize badges', () => {
 
     it('returns the smart contract of the badge', async () => {
       const web3 = ujoConfig.getWeb3();
-      const patronageBadgesProxyAddress = getContractAddress(UjoPatronageBadges, '4');
+      const patronageBadgesProxyAddress = getContractAddress(UjoPatronageBadges, '1234');
       const patronageBadgeContract = new web3.eth.Contract(
         UjoPatronageBadgesFunctions.abi,
         patronageBadgesProxyAddress,
@@ -110,25 +110,18 @@ describe('initialize badges', () => {
       assert.strictEqual(badge[0], 'uniqueCid', 'wrong badge returned');
     });
 
-    it('returns the correct number of badges per owner', async done => {
+    it('returns the correct number of badges per owner', async () => {
       // const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
-      const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress('0xE8F08D7dc98be694CDa49430CA01595776909Eac');
+      const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
 
-      console.log(badgesByAddress.length);
       const badgeContract = ujoBadges.getBadgeContract();
-      const tokensOwnedByAddress = await badgeContract.methods
-        .getAllTokens('0xE8F08D7dc98be694CDa49430CA01595776909Eac')
-        .call();
-      console.log(tokensOwnedByAddress.length);
+      const tokensOwnedByAddress = await badgeContract.methods.getAllTokens(accounts[0]).call();
 
-      setTimeout(() => {
-        assert.strictEqual(
-          badgesByAddress.length,
-          tokensOwnedByAddress.length,
-          'wrong number of badges returned for address',
-        );
-        done();
-      }, 2000);
+      assert.strictEqual(
+        badgesByAddress.length,
+        tokensOwnedByAddress.length,
+        'wrong number of badges returned for address',
+      );
     });
   });
 });

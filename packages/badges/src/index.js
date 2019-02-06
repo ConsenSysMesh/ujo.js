@@ -46,12 +46,11 @@ export default async function initializeBadges(ujoConfig) {
     Now, 6 simulataneous calls were made to `getPastEvents`, which is still O(n) time complexity
     but could make a significant difference in the future when ethereum gets extremely long
    */
-  async function findEventData(hexBadgesByAddress, blockIncrement, startBlock, endBlock) {
+  async function findEventData(badgesByAddress, blockIncrement, startBlock, endBlock) {
     if (patronageBadgeContract) {
       // create an array to store parallelized calls to ethereum block chunks
       const blockIncrements = new Array(Math.ceil((endBlock - startBlock) / blockIncrement)).fill();
-      // optimization for querying event logs by passing event signature
-      const eventHash = utils.soliditySha3('LogBadgeMinted(uint256,string,uint256,address,address)');
+
       // all of these calls get invoked at one after the other, but the entire promise
       // will not resolve until all have completed
       return Promise.all(
@@ -61,16 +60,17 @@ export default async function initializeBadges(ujoConfig) {
           // if were at the first chunk of blocks...
           if (idx === 0)
             options = {
+              filter: { tokenId: badgesByAddress },
               fromBlock: startBlock.toString(),
               toBlock: (startBlock + blockIncrement).toString(),
-              // topics are the indexed/searchable paramaters in Ethereum event logs.
-              topics: [eventHash, hexBadgesByAddress],
             };
           // if were at the non-first chunk of blocks...
           else {
             const fromBlock = (startBlock + blockIncrement * idx + 1).toString();
             const toBlock = (startBlock + blockIncrement * (idx + 1)).toString();
-            options = { fromBlock, toBlock, topics: [eventHash, hexBadgesByAddress] };
+            const filter = { tokenId: badgesByAddress };
+
+            options = { fromBlock, toBlock, filter };
           }
           // issue the event logs request to ethereum
           return patronageBadgeContract.getPastEvents('LogBadgeMinted', options);
@@ -80,12 +80,12 @@ export default async function initializeBadges(ujoConfig) {
     return new Error({ error: 'Attempted to get badge data with no smart contract' });
   }
 
-  async function getBadges(badgeHexes, network, endBlock) {
+  async function getBadges(badgesByAddress, network, endBlock) {
     const startBlock = determineStartBlock(network);
     const blockIncrement = 5000;
     // parse event logs to look for badgeHexes, from the patronage badge contract from start block to end block
     // parallelizes requests by parsing event logs in chunks of "blockIncrement"
-    const encodedTxData = await findEventData(badgeHexes, blockIncrement, startBlock, endBlock);
+    const encodedTxData = await findEventData(badgesByAddress, blockIncrement, startBlock, endBlock);
     // reformats tx data to be useful for clients and/or storage layer
     const eventData = decodeTxData(encodedTxData);
     return eventData;
@@ -165,11 +165,7 @@ export default async function initializeBadges(ujoConfig) {
         const mostRecentBlockNumber = await ujoConfig.getBlockNumber();
         // fetch the token IDs owned by ethereum address
         const badgesByAddress = await patronageBadgeContract.methods.getAllTokens(ethereumAddress).call();
-        // convert the token IDs into their hex value so we can parse the ethereum event logs for those token IDs
-        const hexBadgesByAddress = convertBadgeIdsToHex(badgesByAddress, web3.utils.padLeft);
-        if (!hexBadgesByAddress.length) return [];
-        // scrape ethereum event logs for badge data associated iwth the given token IDs
-        const badges = await getBadges(hexBadgesByAddress, networkId, mostRecentBlockNumber);
+        const badges = await getBadges(badgesByAddress, networkId, mostRecentBlockNumber);
         /* --- add this snippet to unfurl music group metadata within the badges and reformat the badges --- */
         // try {
         //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
