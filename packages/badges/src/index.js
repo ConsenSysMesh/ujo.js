@@ -27,39 +27,42 @@ class Badges {
     // Sample storage provider setup
     this.storageProvider = config.getStorageProvider();
 
-    // Functions that need to be executed at runtime
+    // Cached functions that need to be executed at runtime
     this.getBlockNumber = config.getBlockNumber;
     this.getExchangeRate = config.getExchangeRate;
     this.getTransactionReceipt = config.getTransactionReceipt;
   }
 
-  async findEventData(tokenIds, blockIncrement, startBlock, endBlock) {
+  /**
+   * findEventData
+   * @param {string} tokenIds - indexed parameter to filter event logs on
+   * @param {string} blocksPerWindow - the number of blocks you want to scan per window
+   * @param {string} startBlock - where in the blockchain we start scanning from
+   * @param {string} endBlock - w
+   * @returns {Object} - an interface for interacting with badges
+   */
+  async findEventData(tokenIds) {
     if (this.badgeContract) {
+      // TODO - take these as variables
+      const endBlock = await this.getBlockNumber();
+      const startBlock = determineStartBlock(this.networkId);
+      const blocksPerWindow = 5000;
+
       // create an array to store parallelized calls to ethereum block chunks
-      const blockIncrements = new Array(Math.ceil((endBlock - startBlock) / blockIncrement)).fill();
+      const windows = new Array(Math.ceil((endBlock - startBlock) / blocksPerWindow)).fill();
 
       // all of these calls get invoked at one after the other, but the entire promise
       // will not resolve until all have completed
       return Promise.all(
-        blockIncrements.map((_, idx) => {
-          // craft variables necessary to retrieve specific event logs from ethereum.
-          let options;
-          // if were at the first chunk of blocks...
-          if (idx === 0) {
-            options = {
-              filter: { tokenId: tokenIds },
-              fromBlock: startBlock.toString(),
-              toBlock: (startBlock + blockIncrement).toString(),
-            };
-          }
-          // if were at the non-first chunk of blocks...
-          else {
-            const fromBlock = (startBlock + blockIncrement * idx + 1).toString();
-            const toBlock = (startBlock + blockIncrement * (idx + 1)).toString();
-            const filter = { tokenId: tokenIds };
-
-            options = { fromBlock, toBlock, filter };
-          }
+        windows.map((_, idx) => {
+          // TODO - Explain why the from and to blocks are different if you're at the first index
+          const fromBlock = idx === 0 ? startBlock : startBlock + blocksPerWindow * idx + 1;
+          const toBlock = idx === 0 ? startBlock + blocksPerWindow : startBlock + blocksPerWindow * (idx + 1);
+          const options = {
+            filter: { tokenId: tokenIds }, // tokenId is an indexed parameter in the smart contract
+            fromBlock: fromBlock.toString(),
+            toBlock: toBlock.toString(),
+          };
           // issue the event logs request to ethereum
           return this.badgeContract.getPastEvents('LogBadgeMinted', options);
         }),
@@ -70,13 +73,9 @@ class Badges {
     });
   }
 
-  async getBadges(tokenIds, network) {
-    const endBlock = await this.getBlockNumber();
-    const startBlock = determineStartBlock(network);
-    const blockIncrement = 5000;
-    // parse event logs to look for badgeHexes, from the patronage badge contract from start block to end block
-    // parallelizes requests by parsing event logs in chunks of "blockIncrement"
-    const encodedTxData = await this.findEventData(tokenIds, blockIncrement, startBlock, endBlock);
+  async getBadges(tokenIds) {
+    const encodedTxData = await this.findEventData(tokenIds);
+
     // reformats tx data to be useful for clients and/or storage layer
     const eventData = decodeTxData(encodedTxData);
     return eventData;
@@ -89,7 +88,7 @@ class Badges {
     <String> txHash
   ]
 
-  takes the unique identifier, and gets the badgemetadata from the storage provider
+  takes the unique identifier (badge[0] is cid), and gets the badge metadata from the storage provider
   reformats the badgemetadata for the api spec
   */
   async getBadgeMetadata(badge) {
@@ -130,7 +129,7 @@ class Badges {
     try {
       // fetch the token IDs owned by ethereum address
       const tokenIds = await this.badgeContract.methods.getAllTokens(ethereumAddress).call();
-      const badges = await this.getBadges(tokenIds, this.networkId);
+      const badges = await this.getBadges(tokenIds);
       /* --- add this snippet to unfurl music group metadata within the badges and reformat the badges --- */
       // try {
       //   const badgesWithMetadata = await Promise.all(badges.map(getBadgeMetadata));
@@ -151,10 +150,8 @@ class Badges {
    * @returns {Promise<Object[], Error>} an array of badges. See {@link getBadge} for what each badge looks like in the returned array
    */
   async getBadgesMintedFor(uniqueIdentifier) {
-    const mostRecentBlockNumber = await this.getBlockNumber();
-    // get all the badge data
-    // the empty array means all badges (not any specific tokenIds)
-    const badges = await this.getBadges(null, this.networkId, mostRecentBlockNumber);
+    // get all the badge data. null is passed because there are no filters
+    const badges = await this.getBadges(null);
     // do we want to return any other data with these badges?
     return badges.filter(badge => badge[0] === uniqueIdentifier);
     // add this snippet to unfurl music group information in badge and reformat badge data

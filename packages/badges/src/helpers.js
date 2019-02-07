@@ -2,6 +2,7 @@ import ethUtil from 'ethereumjs-util';
 import flat from 'array.prototype.flat';
 import moment from 'moment';
 
+// Serializes the event data
 export const decodeTxData = eventData =>
   // flattens the array and then decodes the values
   flat(eventData).map(({ transactionHash, returnValues: { nftcid, timeMinted } }) => [
