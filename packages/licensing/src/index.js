@@ -2,12 +2,12 @@ import { boostGas, getContractAddress } from '../../utils/dist';
 import { ETHUSDHandler } from '../../contracts-licensing';
 
 class Licensor {
-  async init(ujoConfig) {
-    this.web3 = ujoConfig.getWeb3();
-    this.networkId = await ujoConfig.getNetwork();
+  async init(config) {
+    this.web3 = config.getWeb3();
+    this.networkId = await config.getNetwork();
     this.licensingHandlerAddress = getContractAddress(ETHUSDHandler, this.networkId);
     this.LicensingHandler = new this.web3.eth.Contract(ETHUSDHandler.abi, this.licensingHandlerAddress);
-    this.oracleAddress = await ujoConfig.getOracleAddress();
+    this.oracleAddress = await config.getOracleAddress();
   }
 
   async license(cid, buyer, beneficiaries, amounts, notifiers, eth) {
