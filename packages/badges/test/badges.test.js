@@ -1,25 +1,24 @@
 import { assert, expect } from 'chai';
 import ujoInit from '../../config';
-import initializeBadges from '..';
+import Badges from '..';
 import { getContractAddress } from '../../utils/dist';
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts-badges';
 
 /* make sure to start a new fresh instance of ganache before running the tests */
 describe('initialize badges', () => {
   const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs', { test: true });
+  let ujoBadges;
 
   it('returns a badge package object with 6 methods', async () => {
-    const ujoBadges = await initializeBadges(ujoConfig);
+    ujoBadges = new Badges();
+    await ujoBadges.init(ujoConfig);
     assert.isObject(ujoBadges, 'ujoBadges is supposed to be an object');
-    assert.equal(Object.keys(ujoBadges).length, 6, 'ujoBadges should have 6 properties, all methods');
-    expect(ujoBadges).to.have.all.keys([
-      'getBadgeContract',
-      'getAllBadges',
-      'getBadgesOwnedByAddress',
-      'getBadgesMintedFor',
-      'getBadge',
-      'buyBadge',
-    ]);
+    /* eslint-disable no-unused-expressions */
+    expect(ujoBadges.getAllBadges).to.not.be.undefined;
+    expect(ujoBadges.getBadgesOwnedByAddress).to.not.be.undefined;
+    expect(ujoBadges.getBadgesMintedFor).to.not.be.undefined;
+    expect(ujoBadges.getBadge).to.not.be.undefined;
+    expect(ujoBadges.buyBadge).to.not.be.undefined;
   });
 
   xit('throws an error if an improperly formed ujoConfig object is passed', () => {});
@@ -31,10 +30,15 @@ describe('initialize badges', () => {
   xit('throws an error if it cannot create an instance of the badge smart contract', () => {});
 
   describe('getBadgeContract', () => {
-    let badgeContractFromBadgePackage;
+    let badgeContract;
+    /* eslint-disable no-shadow */
+    let ujoBadges;
     beforeEach(async () => {
-      const { getBadgeContract } = await initializeBadges(ujoConfig);
-      badgeContractFromBadgePackage = getBadgeContract();
+      ujoBadges = new Badges();
+      await ujoBadges.init(ujoConfig);
+
+      /* eslint-disable prefer-destructuring */
+      badgeContract = ujoBadges.badgeContract;
     });
 
     it('returns the smart contract of the badge', async () => {
@@ -45,9 +49,9 @@ describe('initialize badges', () => {
         patronageBadgesProxyAddress,
       );
 
-      assert.isObject(badgeContractFromBadgePackage, 'should return an object');
+      assert.isObject(badgeContract, 'should return an object');
       assert.equal(
-        JSON.stringify(badgeContractFromBadgePackage),
+        JSON.stringify(badgeContract),
         JSON.stringify(patronageBadgeContract),
         'badge contract improperly created or returned',
       );
@@ -59,7 +63,8 @@ describe('initialize badges', () => {
   describe('getAllBadges', () => {
     let ujoBadges;
     beforeEach(async () => {
-      ujoBadges = await initializeBadges(ujoConfig);
+      ujoBadges = new Badges();
+      await ujoBadges.init(ujoConfig);
     });
 
     xit('returns an empty array when no badges exist', async () => {
@@ -94,7 +99,8 @@ describe('initialize badges', () => {
     let ujoBadges;
     beforeEach(async () => {
       accounts = await ujoConfig.getAccounts();
-      ujoBadges = await initializeBadges(ujoConfig);
+      ujoBadges = new Badges();
+      await ujoBadges.init(ujoConfig);
     });
 
     it('returns an empty array if the address does not own any badges', async () => {
@@ -113,7 +119,7 @@ describe('initialize badges', () => {
     it('returns the correct number of badges per owner', async () => {
       const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
 
-      const badgeContract = ujoBadges.getBadgeContract();
+      const badgeContract = ujoBadges.badgeContract;
       const tokensOwnedByAddress = await badgeContract.methods.getAllTokens(accounts[0]).call();
 
       assert.strictEqual(
@@ -132,7 +138,8 @@ describe('initialize badges', () => {
     let ujoBadges;
     let accounts;
     beforeEach(async () => {
-      ujoBadges = await initializeBadges(ujoConfig);
+      ujoBadges = new Badges();
+      await ujoBadges.init(ujoConfig);
       accounts = await ujoConfig.getAccounts();
     });
 
@@ -175,7 +182,8 @@ describe('initialize badges', () => {
     describe('getBadge', () => {
       let ujoBadges;
       beforeEach(async () => {
-        ujoBadges = await initializeBadges(ujoConfig);
+        ujoBadges = new Badges();
+        await ujoBadges.init(ujoConfig);
       });
 
       it('returns a web31.0 tx receipt', async () => {});
@@ -191,7 +199,8 @@ describe('initialize badges', () => {
       let ujoBadges;
       let accounts;
       beforeEach(async () => {
-        ujoBadges = await initializeBadges(ujoConfig);
+        ujoBadges = new Badges();
+        await ujoBadges.init(ujoConfig);
         accounts = await ujoConfig.getAccounts();
       });
     });

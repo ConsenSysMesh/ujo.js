@@ -13,7 +13,8 @@ class Badges {
   }
 
   async init(config) {
-    this.web3 = config.getWeb3();
+    const web3 = config.getWeb3();
+    this.web3 = web3;
     this.networkId = await config.getNetwork();
     this.badgesProxyAddress = getContractAddress(UjoPatronageBadges, this.networkId);
     this.badgeContract = new web3.eth.Contract(UjoPatronageBadgesFunctions.abi, this.badgesProxyAddress);
@@ -39,12 +40,13 @@ class Badges {
           // craft variables necessary to retrieve specific event logs from ethereum.
           let options;
           // if were at the first chunk of blocks...
-          if (idx === 0)
+          if (idx === 0) {
             options = {
               filter: { tokenId: tokenIds },
               fromBlock: startBlock.toString(),
               toBlock: (startBlock + blockIncrement).toString(),
             };
+          }
           // if were at the non-first chunk of blocks...
           else {
             const fromBlock = (startBlock + blockIncrement * idx + 1).toString();
@@ -58,7 +60,9 @@ class Badges {
         }),
       );
     }
-    return new Error({ error: 'Attempted to get badge data with no smart contract' });
+    return new Error({
+      error: 'Attempted to get badge data with no smart contract',
+    });
   }
 
   async getBadges(tokenIds, network) {
@@ -135,7 +139,7 @@ class Badges {
     if (txReceipt) {
       try {
         // decode the logs from the transaction receipt based on event log signature
-        const { nftcid, timeMinted } = web3.eth.abi.decodeLog(
+        const { nftcid, timeMinted } = this.web3.eth.abi.decodeLog(
           [
             { indexed: true, name: 'tokenId', type: 'uint256' },
             { indexed: false, name: 'nftcid', type: 'string' },
