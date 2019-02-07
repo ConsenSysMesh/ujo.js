@@ -79,3 +79,26 @@ function getBadgesMintedFor() {}
  * const badge = await ujoBadges.getBadge('0xb8eedb9637e423b73df56f456d7a68161af281d0dce3ec4b2f3f977f28226b5e')
  */
 function getBadge() {}
+
+/*
+  findEventData function notes
+
+  Functions that need reference to closed over badge context
+  ETHEREUM EVENT LOG PARALLELIZER
+  instead of linearly going through ethereum and looking at the event logs of each block
+  we go through many chunks of ethereum at the same time, and then join the results together
+
+  This is for performance optimization:
+  Instead of one call to `getPastEvents`, which looks like:
+  [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
+  ^              c h e c k   o n e   b l o c k   a t   a   t i m e                  ^
+  start                                                                             end
+  We do many chunks at the same time, where blocks are checked linearly in each chunk:
+
+  [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
+  |-------------||-------------||-------------||-------------||-------------||-------|
+  ^             ^^             ^^             ^^             ^^             ^^       ^
+  blockIncrement blockIncrement blockIncrement blockIncrement blockIncrement finalIncrement
+  Now, 6 simulataneous calls were made to `getPastEvents`, which is still O(n) time complexity
+  but could make a significant difference in the future when ethereum gets extremely long
+*/
