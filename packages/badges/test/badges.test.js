@@ -104,7 +104,7 @@ describe('initialize badges', () => {
     });
 
     it('returns an array where each badge is an array of 3 items', async () => {
-      const [badge] = await ujoBadges.getBadgesOwnedByAddress(accounts[1]);
+      const [badge] = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
       assert(Array.isArray(badge), 'return value should be an array of badge arrays');
       assert.strictEqual(badge.length, 3, 'there should be three elements in each single badge array');
       assert.strictEqual(badge[0], 'uniqueCid', 'wrong badge returned');
