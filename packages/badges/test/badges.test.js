@@ -181,16 +181,53 @@ describe('initialize badges', () => {
 
     describe('getBadge', () => {
       let ujoBadges;
+      let accounts;
+      let tx;
       beforeEach(async () => {
         ujoBadges = new Badges();
         await ujoBadges.init(ujoConfig);
+        accounts = await ujoConfig.getAccounts();
+        tx = await ujoBadges.buyBadge(accounts[0], 'uniqueCid6', [accounts[7]], [], 5);
       });
 
-      it('returns a web31.0 tx receipt', async () => {});
+      it('returns a valid web3 tx receipt with an extra data prop representing the badge information', async () => {
+        const txReceipt = await ujoBadges.getBadge(tx.transactionHash);
+        expect(txReceipt).to.have.keys([
+          'transactionHash',
+          'transactionIndex',
+          'blockHash',
+          'blockNumber',
+          'from',
+          'to',
+          'gasUsed',
+          'status',
+          'logsBloom',
+          'v',
+          'r',
+          's',
+          'logs',
+          'contractAddress',
+          'cumulativeGasUsed',
+          'data',
+        ]);
+      });
 
-      it('returns null if transaction has not been mined', async () => {});
+      it('returns null if transaction has not been mined', async () => {
+        const txReceipt = await ujoBadges.getBadge(
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+        );
+        assert.isNull(txReceipt);
+      });
 
-      it('returns the standardized badge data with the tx receipt', async () => {});
+      it('returns the standardized badge data with the tx receipt', async () => {
+        const { data } = await ujoBadges.getBadge(tx.transactionHash);
+        assert(Array.isArray(data), 'tx receipt badge data should be an array');
+        assert.strictEqual(
+          data.length,
+          3,
+          'tx receipt badge data expected to return an array of 3 items (cid, time minted, txHash)',
+        );
+      });
 
       it('throws an error if it cannot get the tx receipt', async () => {});
     });
@@ -203,6 +240,45 @@ describe('initialize badges', () => {
         await ujoBadges.init(ujoConfig);
         accounts = await ujoConfig.getAccounts();
       });
+
+      it('returns a valid web3 transaction receipt', async () => {
+        const boughtBadge = await ujoBadges.buyBadge(accounts[5], 'uniqueCid', [accounts[6]], [], 5);
+        expect(boughtBadge).to.have.keys([
+          'transactionHash',
+          'transactionIndex',
+          'blockHash',
+          'blockNumber',
+          'from',
+          'to',
+          'gasUsed',
+          'status',
+          'logsBloom',
+          'v',
+          'r',
+          's',
+          'events',
+          'contractAddress',
+          'cumulativeGasUsed',
+        ]);
+        assert.equal(boughtBadge.status, true, 'error minting badge');
+      });
+
+      it('properly mints a badge', async () => {
+        const boughtBadge = await ujoBadges.buyBadge(accounts[5], 'uniqueCid', [accounts[6]], [], 5);
+        assert.equal(
+          boughtBadge.from.toLowerCase(),
+          accounts[5].toLowerCase(),
+          'badge contract improperly created or returned',
+        );
+      });
+
+      xit('throws an error if a no address or an invalid address is the buyer', async () => {});
+
+      xit('throws an error if a no address or an invalid address is the recipients array', async () => {});
+
+      xit('throws an error if there is a mismatched length between the recipient and splits array', async () => {});
+
+      xit('throws an error if a negative value is passed in as the amount', async () => {});
     });
   });
 });
