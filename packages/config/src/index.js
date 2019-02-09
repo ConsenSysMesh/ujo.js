@@ -5,22 +5,22 @@ import { getContractAddress } from '../../utils';
 
 import ujoStorage from './ujoStorage';
 
+let oracle;
+
 class Config {
-  //
-  // TODO - Fix this.oracle is coming back undefined
-  //
   constructor(web3Provider, dataStorageProvider, opts = {}) {
+    this.name = 'Alex';
     // TODO - add network validations (rinkeby or mainnet)
     this.web3 = new Web3(web3Provider);
     this.storageProvider = ujoStorage(dataStorageProvider);
-    this.oracle = opts.test ? TestOracle : USDETHOracle;
+    oracle = opts.test ? TestOracle : USDETHOracle;
   }
 
   async getOracleAddress() {
     return new Promise((resolve, reject) => {
       this.web3.eth.net.getId((err, networkId) => {
         if (err) reject(err);
-        else resolve(getContractAddress(this.oracle, networkId));
+        else resolve(getContractAddress(oracle, networkId));
       });
     });
   }
@@ -30,8 +30,8 @@ class Config {
       this.web3.eth.net.getId(async (err, networkId) => {
         if (err) reject(err);
         try {
-          const oracleAddress = getContractAddress(this.oracle, networkId);
-          const oracleInstance = new web3.eth.Contract(this.oracle.abi, oracleAddress);
+          const oracleAddress = getContractAddress(oracle, networkId);
+          const oracleInstance = new this.web3.eth.Contract(oracle.abi, oracleAddress);
           const exchangeRate = await oracleInstance.methods.getUintPrice().call();
           resolve(exchangeRate.toString(10));
         } catch (error) {
