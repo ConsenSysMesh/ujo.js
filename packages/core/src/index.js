@@ -1,16 +1,14 @@
-import ujoInit from '../../config';
+import Config from '../../config';
 import initializeBadges from '../../badges';
 import initializeLicensing from '../../licensing';
 
 async function execute() {
-  // const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs');
-  const ujoConfig = ujoInit('https://rinkeby.infura.io/v3/d00a0a90e5ec4086987529d063643d9c', 'ipfs');
-  const web3 = ujoConfig.getWeb3();
-  // const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs');
+  const config = new Config('https://rinkeby.infura.io/v3/d00a0a90e5ec4086987529d063643d9c', 'ipfs');
+  const web3 = config.web3;
   // do not delete, will translate this into documentation
-  const accounts = await ujoConfig.getAccounts();
-  const network = await ujoConfig.getNetwork();
-  const txReceipt = await ujoConfig.getTransactionReceipt(
+  const accounts = await config.getAccounts();
+  const network = await config.getNetwork();
+  const txReceipt = await config.getTransactionReceipt(
     '0xc3ccf36047e8645210f7851d5f01766ba3e2fe5d63d1c034870ad35d589ad620',
   );
   // console.log('txReceipt', txReceipt);

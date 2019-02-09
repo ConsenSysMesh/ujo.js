@@ -18,14 +18,13 @@ class Badges {
    * @returns {Object} - an interface for interacting with badges
    */
   async init(config) {
-    const web3 = config.getWeb3();
-    this.web3 = web3;
+    this.web3 = config.web3;
     this.networkId = await config.getNetwork();
     this.badgesProxyAddress = getContractAddress(UjoPatronageBadges, this.networkId);
-    this.badgeContract = new web3.eth.Contract(UjoPatronageBadgesFunctions.abi, this.badgesProxyAddress);
+    this.badgeContract = new this.web3.eth.Contract(UjoPatronageBadgesFunctions.abi, this.badgesProxyAddress);
 
     // Sample storage provider setup
-    this.storageProvider = config.getStorageProvider();
+    this.storageProvider = config.storageProvider;
 
     // Cached functions that need to be executed at runtime
     this.getBlockNumber = config.getBlockNumber;
