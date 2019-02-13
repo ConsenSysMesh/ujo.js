@@ -9,7 +9,6 @@ let oracle;
 
 class Config {
   constructor(web3Provider, dataStorageProvider, opts = {}) {
-    this.name = 'Alex';
     // TODO - add network validations (rinkeby or mainnet)
     this.web3 = new Web3(web3Provider);
     this.storageProvider = ujoStorage(dataStorageProvider);
