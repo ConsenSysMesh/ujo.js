@@ -1,28 +1,27 @@
 import { assert, expect } from 'chai';
-import ujoInit from '../../config';
-import initializeBadges from '..';
+import Config from '../../config';
+import Badges from '..';
 import { getContractAddress } from '../../utils/dist';
 import { UjoPatronageBadges, UjoPatronageBadgesFunctions } from '../../contracts-badges';
 
 /* make sure to start a new fresh instance of ganache before running the tests */
 describe('initialize badges', () => {
-  const ujoConfig = ujoInit('http://127.0.0.1:8545', 'ipfs', { test: true });
+  const config = new Config('http://127.0.0.1:8545', 'ipfs', { test: true });
+  let ujoBadges;
 
   it('returns a badge package object with 6 methods', async () => {
-    const ujoBadges = await initializeBadges(ujoConfig);
+    ujoBadges = new Badges();
+    await ujoBadges.init(config);
     assert.isObject(ujoBadges, 'ujoBadges is supposed to be an object');
-    assert.equal(Object.keys(ujoBadges).length, 6, 'ujoBadges should have 6 properties, all methods');
-    expect(ujoBadges).to.have.all.keys([
-      'getBadgeContract',
-      'getAllBadges',
-      'getBadgesOwnedByAddress',
-      'getBadgesMintedFor',
-      'getBadge',
-      'buyBadge',
-    ]);
+    /* eslint-disable no-unused-expressions */
+    expect(ujoBadges.getAllBadges).to.not.be.undefined;
+    expect(ujoBadges.getBadgesOwnedByAddress).to.not.be.undefined;
+    expect(ujoBadges.getBadgesMintedFor).to.not.be.undefined;
+    expect(ujoBadges.getBadge).to.not.be.undefined;
+    expect(ujoBadges.buyBadge).to.not.be.undefined;
   });
 
-  xit('throws an error if an improperly formed ujoConfig object is passed', () => {});
+  xit('throws an error if an improperly formed config object is passed', () => {});
 
   xit('throws an error if it cannot get the network id', () => {});
 
@@ -31,23 +30,28 @@ describe('initialize badges', () => {
   xit('throws an error if it cannot create an instance of the badge smart contract', () => {});
 
   describe('getBadgeContract', () => {
-    let badgeContractFromBadgePackage;
+    let badgeContract;
+    /* eslint-disable no-shadow */
+    let ujoBadges;
     beforeEach(async () => {
-      const { getBadgeContract } = await initializeBadges(ujoConfig);
-      badgeContractFromBadgePackage = getBadgeContract();
+      ujoBadges = new Badges();
+      await ujoBadges.init(config);
+
+      /* eslint-disable prefer-destructuring */
+      badgeContract = ujoBadges.badgeContract;
     });
 
     it('returns the smart contract of the badge', async () => {
-      const web3 = ujoConfig.getWeb3();
+      const web3 = config.web3;
       const patronageBadgesProxyAddress = getContractAddress(UjoPatronageBadges, '1234');
       const patronageBadgeContract = new web3.eth.Contract(
         UjoPatronageBadgesFunctions.abi,
         patronageBadgesProxyAddress,
       );
 
-      assert.isObject(badgeContractFromBadgePackage, 'should return an object');
+      assert.isObject(badgeContract, 'should return an object');
       assert.equal(
-        JSON.stringify(badgeContractFromBadgePackage),
+        JSON.stringify(badgeContract),
         JSON.stringify(patronageBadgeContract),
         'badge contract improperly created or returned',
       );
@@ -59,7 +63,8 @@ describe('initialize badges', () => {
   describe('getAllBadges', () => {
     let ujoBadges;
     beforeEach(async () => {
-      ujoBadges = await initializeBadges(ujoConfig);
+      ujoBadges = new Badges();
+      await ujoBadges.init(config);
     });
 
     xit('returns an empty array when no badges exist', async () => {
@@ -71,7 +76,7 @@ describe('initialize badges', () => {
     it('returns an array of badges when badges exist', async () => {
       const badges = await ujoBadges.getAllBadges();
       const badgeCount = badges.length;
-      const accounts = await ujoConfig.getAccounts();
+      const accounts = await config.getAccounts();
       await ujoBadges.buyBadge(accounts[0], 'uniqueCid', [accounts[1]], [], 5);
       await ujoBadges.buyBadge(accounts[1], 'uniqueCid1', [accounts[2]], [], 5);
       const twoMoreBadges = await ujoBadges.getAllBadges();
@@ -93,8 +98,9 @@ describe('initialize badges', () => {
     let accounts;
     let ujoBadges;
     beforeEach(async () => {
-      accounts = await ujoConfig.getAccounts();
-      ujoBadges = await initializeBadges(ujoConfig);
+      accounts = await config.getAccounts();
+      ujoBadges = new Badges();
+      await ujoBadges.init(config);
     });
 
     it('returns an empty array if the address does not own any badges', async () => {
@@ -113,7 +119,7 @@ describe('initialize badges', () => {
     it('returns the correct number of badges per owner', async () => {
       const badgesByAddress = await ujoBadges.getBadgesOwnedByAddress(accounts[0]);
 
-      const badgeContract = ujoBadges.getBadgeContract();
+      const badgeContract = ujoBadges.badgeContract;
       const tokensOwnedByAddress = await badgeContract.methods.getAllTokens(accounts[0]).call();
 
       assert.strictEqual(
@@ -132,8 +138,9 @@ describe('initialize badges', () => {
     let ujoBadges;
     let accounts;
     beforeEach(async () => {
-      ujoBadges = await initializeBadges(ujoConfig);
-      accounts = await ujoConfig.getAccounts();
+      ujoBadges = new Badges();
+      await ujoBadges.init(config);
+      accounts = await config.getAccounts();
     });
 
     it('returns an empty array if the unique string does not have any badges minted', async () => {
@@ -174,15 +181,53 @@ describe('initialize badges', () => {
 
     describe('getBadge', () => {
       let ujoBadges;
+      let accounts;
+      let tx;
       beforeEach(async () => {
-        ujoBadges = await initializeBadges(ujoConfig);
+        ujoBadges = new Badges();
+        await ujoBadges.init(config);
+        accounts = await config.getAccounts();
+        tx = await ujoBadges.buyBadge(accounts[0], 'uniqueCid6', [accounts[7]], [], 5);
       });
 
-      it('returns a web31.0 tx receipt', async () => {});
+      it('returns a valid web3 tx receipt with an extra data prop representing the badge information', async () => {
+        const txReceipt = await ujoBadges.getBadge(tx.transactionHash);
+        expect(txReceipt).to.have.keys([
+          'transactionHash',
+          'transactionIndex',
+          'blockHash',
+          'blockNumber',
+          'from',
+          'to',
+          'gasUsed',
+          'status',
+          'logsBloom',
+          'v',
+          'r',
+          's',
+          'logs',
+          'contractAddress',
+          'cumulativeGasUsed',
+          'data',
+        ]);
+      });
 
-      it('returns null if transaction has not been mined', async () => {});
+      it('returns null if transaction has not been mined', async () => {
+        const txReceipt = await ujoBadges.getBadge(
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+        );
+        assert.isNull(txReceipt);
+      });
 
-      it('returns the standardized badge data with the tx receipt', async () => {});
+      it('returns the standardized badge data with the tx receipt', async () => {
+        const { data } = await ujoBadges.getBadge(tx.transactionHash);
+        assert(Array.isArray(data), 'tx receipt badge data should be an array');
+        assert.strictEqual(
+          data.length,
+          3,
+          'tx receipt badge data expected to return an array of 3 items (cid, time minted, txHash)',
+        );
+      });
 
       it('throws an error if it cannot get the tx receipt', async () => {});
     });
@@ -191,9 +236,49 @@ describe('initialize badges', () => {
       let ujoBadges;
       let accounts;
       beforeEach(async () => {
-        ujoBadges = await initializeBadges(ujoConfig);
-        accounts = await ujoConfig.getAccounts();
+        ujoBadges = new Badges();
+        await ujoBadges.init(config);
+        accounts = await config.getAccounts();
       });
+
+      it('returns a valid web3 transaction receipt', async () => {
+        const boughtBadge = await ujoBadges.buyBadge(accounts[5], 'uniqueCid', [accounts[6]], [], 5);
+        expect(boughtBadge).to.have.keys([
+          'transactionHash',
+          'transactionIndex',
+          'blockHash',
+          'blockNumber',
+          'from',
+          'to',
+          'gasUsed',
+          'status',
+          'logsBloom',
+          'v',
+          'r',
+          's',
+          'events',
+          'contractAddress',
+          'cumulativeGasUsed',
+        ]);
+        assert.equal(boughtBadge.status, true, 'error minting badge');
+      });
+
+      it('properly mints a badge', async () => {
+        const boughtBadge = await ujoBadges.buyBadge(accounts[5], 'uniqueCid', [accounts[6]], [], 5);
+        assert.equal(
+          boughtBadge.from.toLowerCase(),
+          accounts[5].toLowerCase(),
+          'badge contract improperly created or returned',
+        );
+      });
+
+      xit('throws an error if a no address or an invalid address is the buyer', async () => {});
+
+      xit('throws an error if a no address or an invalid address is the recipients array', async () => {});
+
+      xit('throws an error if there is a mismatched length between the recipient and splits array', async () => {});
+
+      xit('throws an error if a negative value is passed in as the amount', async () => {});
     });
   });
 });
