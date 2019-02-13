@@ -26,8 +26,8 @@
     "migrate-badges": "cd packages/contracts-badges && truffle migrate",
     "migrate-licensing": "cd packages/contracts-licensing && truffle migrate",
     "migrate-contracts": "npm run migrate-oracle && npm run migrate-badges && npm run migrate-licensing",
-    "private-chain": "ganache-cli -i 1234 -m='oyster virtual frown glove protect elder bottom organ axis replace project sweet'",
-    "private-ujo-network": "npm run clean-contracts && npm run compile-contracts && npm run migrate-contracts"
+    "ganache": "ganache-cli -i 1234 -m='oyster virtual frown glove protect elder bottom organ axis replace project sweet'",
+    "migrate": "npm run clean-contracts && npm run compile-contracts && npm run migrate-contracts"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

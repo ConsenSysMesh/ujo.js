@@ -18,10 +18,10 @@ This makes sense because you won't need to compile the code when `npm install`in
 Starting a private ujo network with our smart contracts:
 
 start a ganache-cli instance with networkID specified
-`npm run private-chain`
+`npm run ganache`
 
-compile && migrate contracts to private chain
-`npm run private-ujo-network`
+compile && migrate contracts to ganache private chain
+`npm run migrate`
 
 [ADD A NOTE - ADD .ENV FILE]
 
@@ -31,7 +31,7 @@ This `cd`s into each smart contract package, compiles the contracts, and then mi
 
 ## testing
 
-Make sure you've run: `npm run private-ujo-network` to have a private chain up and running
+Make sure you've run: `npm run migrate` to have a private migrated and running
 
 from the root directory: `yarn test`
 
